@@ -1,0 +1,55 @@
+<section class="page">
+    <a class="back-link" routerLink="/invoices">Back to invoices</a>
+
+    @if (invoice(); as currentInvoice) {
+    <header class="invoice-header">
+        <div>
+            <h1>{{ currentInvoice.invoiceNumber }}</h1>
+            <p>{{ currentInvoice.clientName }} · {{ currentInvoice.clientEmail }}</p>
+            <p>Issue: {{ currentInvoice.issueDate }} | Due: {{ currentInvoice.dueDate }}</p>
+        </div>
+
+        <div class="actions">
+            <span class="badge" [class.paid]="currentInvoice.status === 'paid'">{{ currentInvoice.status }}</span>
+            <button type="button" (click)="markAsPaid()" [disabled]="currentInvoice.status === 'paid'">
+                Mark as Paid
+            </button>
+            <button type="button" class="secondary" (click)="downloadPdf()">Download PDF</button>
+        </div>
+    </header>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Description</th>
+                <th>Qty</th>
+                <th>Unit Price</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (line of currentInvoice.lineItems; track line.id) {
+            <tr>
+                <td>{{ line.description }}</td>
+                <td>{{ line.qty }}</td>
+                <td>{{ formatMoney(line.unitPrice) }}</td>
+                <td>{{ formatMoney(calculateLineTotal(line)) }}</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+
+    <section class="totals">
+        <p><span>Subtotal</span><strong>{{ formatMoney(summary().subtotal) }}</strong></p>
+        <p><span>Tax (18%)</span><strong>{{ formatMoney(summary().taxAmount) }}</strong></p>
+        <p class="grand-total"><span>Grand Total</span><strong>{{ formatMoney(summary().grandTotal) }}</strong></p>
+    </section>
+    } @else {
+    <h1>Invoice not found</h1>
+    <p>This invoice id does not exist in mock data.</p>
+    }
+
+    @if (toastMessage()) {
+    <div class="toast">{{ toastMessage() }}</div>
+    }
+</section>

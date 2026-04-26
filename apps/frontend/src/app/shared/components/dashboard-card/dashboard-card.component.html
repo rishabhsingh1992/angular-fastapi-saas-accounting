@@ -1,0 +1,53 @@
+<mat-card [style.background-color]="theme().backgroundColor" [style.border-color]="theme().borderColor"
+    [style.color]="theme().textColor" class="dashboard-card">
+    <mat-card-header>
+        <mat-card-title class="card-title">
+            {{ metric().title }}
+            @if (metric().description) {
+            <mat-icon [matTooltip]="metric().description" class="info-icon">
+                info
+            </mat-icon>
+            }
+        </mat-card-title>
+    </mat-card-header>
+
+    <mat-card-content>
+        @if (isLoading()) {
+        <div class="skeleton-container">
+            <div class="skeleton skeleton-title"></div>
+            <div class="skeleton skeleton-value"></div>
+        </div>
+        } @else {
+        <div class="metric-content">
+            @if (!isFieldHidden('value')) {
+            <div class="metric-value-section">
+                <p class="metric-value">{{ metric().value }}</p>
+                @if (metric().unit) {
+                <span class="metric-unit">{{ metric().unit }}</span>
+                }
+            </div>
+            }
+
+            @if (!isFieldHidden('trend') && metric().trendDirection) {
+            <div class="trend-section" [style.color]="trendColor()">
+                <div class="trend-indicator">
+                    <mat-icon class="trend-icon">
+                        {{ trendIcon() }}
+                    </mat-icon>
+                    @if (metric().trendValue !== undefined) {
+                    <span class="trend-value">{{ metric().trendValue }}%</span>
+                    }
+                </div>
+                @if (metric().trendLabel) {
+                <span class="trend-label">{{ metric().trendLabel }}</span>
+                }
+            </div>
+            }
+
+            @if (!isFieldHidden('description') && metric().description) {
+            <p class="metric-description">{{ metric().description }}</p>
+            }
+        </div>
+        }
+    </mat-card-content>
+</mat-card>

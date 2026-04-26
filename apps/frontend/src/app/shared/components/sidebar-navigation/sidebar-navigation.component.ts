@@ -9,12 +9,9 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
-import {
-  SidebarMenuItem,
-  TenantBranding,
-  UserRole,
-} from '../../services/navigation/sidebar-navigation.types';
+import { SidebarMenuItem, TenantBranding, UserRole } from '../../models';
 import { SidebarNavigationApiService } from '../../services/navigation/sidebar-navigation-api.service';
+import { NavigationService } from '../../services/navigation.service';
 
 @Component({
   selector: 'app-sidebar-navigation',
@@ -25,6 +22,7 @@ import { SidebarNavigationApiService } from '../../services/navigation/sidebar-n
 })
 export class SidebarNavigationComponent {
   private readonly api = inject(SidebarNavigationApiService);
+  private readonly navigationService = inject(NavigationService);
   private readonly router = inject(Router);
 
   tenantId = input<string>('default');
@@ -44,7 +42,7 @@ export class SidebarNavigationComponent {
   protected readonly expanded = signal<Record<string, boolean>>({});
 
   protected readonly filteredMenu = computed(() =>
-    this.filterByRole(this.menuItems(), this.currentUserRole())
+    this.navigationService.getFilteredNavItems(this.currentUserRole())
   );
 
   constructor() {
@@ -79,13 +77,7 @@ export class SidebarNavigationComponent {
   }
 
   protected hasAnyActiveChild(item: SidebarMenuItem): boolean {
-    const children = item.children ?? [];
-    return children.some((child) => {
-      if (child.route && this.isActiveRoute(child.route)) {
-        return true;
-      }
-      return this.hasAnyActiveChild(child);
-    });
+    return this.navigationService.hasAnyActiveChild(item, (route) => this.isActiveRoute(route));
   }
 
   private loadSidebarData(tenantId: string): void {
@@ -94,9 +86,11 @@ export class SidebarNavigationComponent {
     this.api.getMenuItems().subscribe({
       next: (items) => {
         this.menuItems.set(items);
+        this.navigationService.setNavItems(items);
       },
       error: () => {
         this.menuItems.set([]);
+        this.navigationService.setNavItems([]);
       },
     });
 
@@ -119,18 +113,5 @@ export class SidebarNavigationComponent {
         this.isLoading.set(false);
       },
     });
-  }
-
-  private filterByRole(items: SidebarMenuItem[], role: UserRole): SidebarMenuItem[] {
-    return items
-      .filter((item) => item.allowedRoles.includes(role))
-      .map((item) => {
-        const children = item.children ? this.filterByRole(item.children, role) : undefined;
-        return {
-          ...item,
-          children,
-        };
-      })
-      .filter((item) => item.route || (item.children && item.children.length > 0));
   }
 }

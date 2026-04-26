@@ -1,0 +1,58 @@
+<div class="demo-container">
+    <h1>Dashboard Card Component - Demo</h1>
+
+    <div class="controls">
+        <label>
+            Select Theme:
+            <select (change)="onThemeChange($event)">
+                <option value="default">Default</option>
+                <option value="premium">Premium</option>
+                <option value="enterprise">Enterprise</option>
+                <option value="dark">Dark</option>
+            </select>
+        </label>
+
+        <label>
+            Select Role:
+            <select (change)="onRoleChange($event)">
+                <option value="admin">Admin</option>
+                <option value="manager">Manager</option>
+                <option value="user">User</option>
+                <option value="viewer">Viewer</option>
+            </select>
+        </label>
+
+        <button (click)="toggleLoadingState()">
+            {{ isLoading() ? 'Stop Loading' : 'Start Loading' }}
+        </button>
+    </div>
+
+    <div class="cards-grid">
+        <app-dashboard-card [metric]="revenueMetric()" [isLoading]="isLoading()" [currentUserRole]="selectedRole()"
+            [tenantId]="selectedTheme()" (cardClicked)="onCardClicked($event)" />
+
+        <app-dashboard-card [metric]="usersMetric()" [isLoading]="isLoading()" [currentUserRole]="selectedRole()"
+            [tenantId]="selectedTheme()" (cardClicked)="onCardClicked($event)" />
+
+        <app-dashboard-card [metric]="conversionMetric()" [isLoading]="isLoading()" [currentUserRole]="selectedRole()"
+            [tenantId]="selectedTheme()" (cardClicked)="onCardClicked($event)" />
+
+        <app-dashboard-card [metric]="errorMetric()" [isLoading]="isLoading()" [currentUserRole]="selectedRole()"
+            [tenantId]="selectedTheme()" (cardClicked)="onCardClicked($event)" />
+
+        <app-dashboard-card [metric]="profitMarginMetric()" [isLoading]="isLoading()" [currentUserRole]="selectedRole()"
+            [accessControl]="{ minimumRole: 'manager', hiddenFields: ['value'] }" [tenantId]="selectedTheme()"
+            (cardClicked)="onCardClicked($event)" />
+
+        <app-dashboard-card [metric]="customerSatisfactionMetric()" [isLoading]="isLoading()"
+            [currentUserRole]="selectedRole()" [accessControl]="{ minimumRole: 'user', hiddenFields: ['trend'] }"
+            [tenantId]="selectedTheme()" (cardClicked)="onCardClicked($event)" />
+    </div>
+
+    @if (lastClickedMetric()) {
+    <div class="event-log">
+        <h3>Last Card Clicked:</h3>
+        <pre>{{ lastClickedMetric() | json }}</pre>
+    </div>
+    }
+</div>

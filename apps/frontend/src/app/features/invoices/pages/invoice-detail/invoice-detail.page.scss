@@ -1,0 +1,118 @@
+.page {
+    padding: 24px;
+}
+
+.back-link {
+    display: inline-block;
+    margin-bottom: 16px;
+    color: #2563eb;
+    text-decoration: none;
+}
+
+.invoice-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.invoice-header h1 {
+    margin: 0 0 6px;
+}
+
+.invoice-header p {
+    margin: 0 0 4px;
+    color: #475569;
+}
+
+.actions {
+    display: grid;
+    gap: 8px;
+    justify-items: end;
+}
+
+.badge {
+    display: inline-block;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #854d0e;
+    background: #fef3c7;
+    border-radius: 999px;
+    padding: 4px 10px;
+}
+
+.badge.paid {
+    color: #166534;
+    background: #dcfce7;
+}
+
+button {
+    border: 1px solid #cbd5e1;
+    background: #0f172a;
+    color: #fff;
+    border-radius: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+}
+
+button.secondary {
+    background: #fff;
+    color: #0f172a;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid #e2e8f0;
+    background: #fff;
+}
+
+th,
+td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+th {
+    font-weight: 600;
+    color: #475569;
+}
+
+tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.totals {
+    width: min(320px, 100%);
+    margin-left: auto;
+    margin-top: 16px;
+}
+
+.totals p {
+    display: flex;
+    justify-content: space-between;
+    margin: 8px 0;
+}
+
+.grand-total {
+    border-top: 1px solid #e2e8f0;
+    padding-top: 10px;
+}
+
+.toast {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    background: #0f172a;
+    color: #fff;
+    border-radius: 8px;
+    padding: 10px 14px;
+}

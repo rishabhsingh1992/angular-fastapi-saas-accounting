@@ -1,0 +1,19 @@
+<section class="page">
+    <h1>Customers</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Email</th>
+            </tr>
+        </thead>
+        <tbody>
+            @for (customer of customers(); track customer.id) {
+            <tr>
+                <td>{{ customer.name }}</td>
+                <td>{{ customer.email }}</td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</section>

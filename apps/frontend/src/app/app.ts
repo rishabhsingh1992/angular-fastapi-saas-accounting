@@ -12,10 +12,11 @@
 // }
 
 
-import { ChangeDetectionStrategy, Component, signal } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { SidebarNavigationComponent } from './shared/components/sidebar-navigation/sidebar-navigation.component';
-import { UserRole } from './shared/services/navigation/sidebar-navigation.types';
+import { UserRole } from './shared/models';
+import { TenantContextService } from './shared/services/tenant-context.service';
 
 @Component({
   selector: 'app-root',
@@ -25,16 +26,18 @@ import { UserRole } from './shared/services/navigation/sidebar-navigation.types'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class App {
-  protected readonly tenantId = signal('default');
-  protected readonly currentRole = signal<UserRole>('manager');
-  protected readonly roles: UserRole[] = ['admin', 'manager', 'analyst', 'viewer'];
-  protected readonly tenants = ['default', 'aurora', 'atlas'];
+  private readonly tenantContext = inject(TenantContextService);
+
+  protected readonly tenantId = this.tenantContext.tenantId;
+  protected readonly currentRole = this.tenantContext.currentRole;
+  protected readonly roles = this.tenantContext.roles;
+  protected readonly tenants = this.tenantContext.tenants;
 
   protected onRoleChange(role: string): void {
-    this.currentRole.set(role as UserRole);
+    this.tenantContext.setRole(role as UserRole);
   }
 
   protected onTenantChange(tenantId: string): void {
-    this.tenantId.set(tenantId);
+    this.tenantContext.setTenant(tenantId);
   }
 }

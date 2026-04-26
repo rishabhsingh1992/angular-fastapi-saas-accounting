@@ -7,36 +7,41 @@ export const routes: Routes = [
 		redirectTo: 'dashboard',
 	},
 	{
-		path: 'dashboard',
-		loadComponent: () => import('./pages/dashboard.page').then((m) => m.DashboardPage),
+		path: '',
+		loadChildren: () => import('./features/auth/auth.routes').then((m) => m.AUTH_ROUTES),
 	},
 	{
-		path: 'invoices/:id',
-		loadComponent: () => import('./pages/invoice-detail.page').then((m) => m.InvoiceDetailPage),
+		path: 'dashboard',
+		loadChildren: () =>
+			import('./features/dashboard/dashboard.routes').then((m) => m.DASHBOARD_ROUTES),
 	},
 	{
 		path: 'invoices',
-		loadComponent: () => import('./pages/invoices.page').then((m) => m.InvoicesPage),
+		loadChildren: () => import('./features/invoices/invoices.routes').then((m) => m.INVOICES_ROUTES),
 	},
 	{
 		path: 'expenses',
-		loadComponent: () => import('./pages/expenses.page').then((m) => m.ExpensesPage),
+		loadChildren: () => import('./features/expenses/expenses.routes').then((m) => m.EXPENSES_ROUTES),
 	},
 	{
 		path: 'reports',
-		loadComponent: () => import('./pages/reports.page').then((m) => m.ReportsPage),
+		loadChildren: () => import('./features/reports/reports.routes').then((m) => m.REPORTS_ROUTES),
 	},
 	{
 		path: 'settings',
-		loadComponent: () => import('./pages/settings.page').then((m) => m.SettingsPage),
+		loadChildren: () => import('./features/settings/settings.routes').then((m) => m.SETTINGS_ROUTES),
 	},
 	{
-		path: 'login',
-		loadComponent: () => import('./pages/login.page').then((m) => m.LoginPage),
+		path: 'billing',
+		loadChildren: () => import('./features/billing/billing.routes').then((m) => m.BILLING_ROUTES),
 	},
 	{
-		path: 'register',
-		loadComponent: () => import('./pages/register.page').then((m) => m.RegisterPage),
+		path: 'customers',
+		loadChildren: () => import('./features/customers/customers.routes').then((m) => m.CUSTOMERS_ROUTES),
+	},
+	{
+		path: 'overview',
+		loadChildren: () => import('./features/overview/overview.routes').then((m) => m.OVERVIEW_ROUTES),
 	},
 	{
 		path: '**',

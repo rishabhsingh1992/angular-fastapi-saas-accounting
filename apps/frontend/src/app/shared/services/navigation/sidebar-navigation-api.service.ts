@@ -1,11 +1,7 @@
 import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
-import { SidebarMenuItem, TenantBranding } from './sidebar-navigation.types';
-
-interface BrandingApiResponse {
-  tenants: TenantBranding[];
-}
+import { BrandingApiResponse, SidebarMenuItem, TenantBranding } from '../../models';
 
 @Injectable({
   providedIn: 'root',
