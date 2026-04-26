@@ -11,6 +11,10 @@ export const routes: Routes = [
 		loadComponent: () => import('./pages/dashboard.page').then((m) => m.DashboardPage),
 	},
 	{
+		path: 'invoices/:id',
+		loadComponent: () => import('./pages/invoice-detail.page').then((m) => m.InvoiceDetailPage),
+	},
+	{
 		path: 'invoices',
 		loadComponent: () => import('./pages/invoices.page').then((m) => m.InvoicesPage),
 	},
@@ -25,6 +29,14 @@ export const routes: Routes = [
 	{
 		path: 'settings',
 		loadComponent: () => import('./pages/settings.page').then((m) => m.SettingsPage),
+	},
+	{
+		path: 'login',
+		loadComponent: () => import('./pages/login.page').then((m) => m.LoginPage),
+	},
+	{
+		path: 'register',
+		loadComponent: () => import('./pages/register.page').then((m) => m.RegisterPage),
 	},
 	{
 		path: '**',
