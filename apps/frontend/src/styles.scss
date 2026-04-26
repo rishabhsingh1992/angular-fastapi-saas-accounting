@@ -1,39 +1,130 @@
-
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
-html {
-  @include mat.theme((
-    color: (
-      primary: mat.$azure-palette,
-      tertiary: mat.$blue-palette,
-    ),
-    typography: Roboto,
-    density: 0,
-  ));
+$light-theme: mat.define-theme((color: (theme-type: light,
+        primary: mat.$violet-palette,
+        tertiary: mat.$cyan-palette,
+      ),
+      typography: (brand-family: 'Inter, sans-serif',
+        plain-family: 'Inter, sans-serif',
+      ),
+      density: (scale: 0,
+      ),
+    ));
+
+$dark-theme: mat.define-theme((color: (theme-type: dark,
+        primary: mat.$violet-palette,
+        tertiary: mat.$cyan-palette,
+      ),
+      typography: (brand-family: 'Inter, sans-serif',
+        plain-family: 'Inter, sans-serif',
+      ),
+      density: (scale: 0,
+      ),
+    ));
+
+:root {
+  @include mat.all-component-themes($light-theme);
+}
+
+.dark-theme {
+  @include mat.all-component-colors($dark-theme);
 }
 
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
   color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
   margin: 0;
 }
-/* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+body.dark-theme {
+  color-scheme: dark;
+}
+
+body.dark-theme app-dashboard-page .page {
+  background: #111827;
+}
+
+body.dark-theme app-dashboard-page .page-header p,
+body.dark-theme app-dashboard-page .health-message,
+body.dark-theme app-dashboard-page .loading-state,
+body.dark-theme app-dashboard-page .quick-action-card span {
+  color: #cbd5e1;
+}
+
+body.dark-theme app-dashboard-page .card,
+body.dark-theme app-dashboard-page .quick-action-card,
+body.dark-theme app-dashboard-page .section-card {
+  border-color: #334155;
+}
+
+body.dark-theme app-dashboard-page .card-avatar {
+  background: #1e293b;
+  color: #e2e8f0;
+}
+
+body.dark-theme app-dashboard-page .metric-value,
+body.dark-theme app-dashboard-page .section-title {
+  color: #f8fafc;
+}
+
+body.dark-theme app-dashboard-page .metric.revenue .card-avatar {
+  background: #312e81;
+  color: #ddd6fe;
+}
+
+body.dark-theme app-dashboard-page .metric.invoices .card-avatar {
+  background: #1e3a8a;
+  color: #bfdbfe;
+}
+
+body.dark-theme app-dashboard-page .metric.customers .card-avatar {
+  background: #14532d;
+  color: #bbf7d0;
+}
+
+body.dark-theme app-dashboard-page .health-status {
+  background: #1e293b !important;
+  color: #e2e8f0 !important;
+}
+
+body.dark-theme app-dashboard-page .health-status.up,
+body.dark-theme app-dashboard-page .invoice-status-paid {
+  background: #14532d !important;
+  color: #bbf7d0 !important;
+}
+
+body.dark-theme app-dashboard-page .health-status.down,
+body.dark-theme app-dashboard-page .invoice-status-overdue {
+  background: #7f1d1d !important;
+  color: #fecaca !important;
+}
+
+body.dark-theme app-dashboard-page .quick-action-card mat-icon {
+  color: #c4b5fd;
+}
+
+body.dark-theme app-dashboard-page .invoice-row:hover {
+  background: #1f2937;
+}
+
+body.dark-theme app-dashboard-page .invoice-status-sent {
+  background: #1e3a8a !important;
+  color: #bfdbfe !important;
+}
+
+body.dark-theme app-dashboard-page .invoice-status-draft {
+  background: #334155 !important;
+  color: #e2e8f0 !important;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', 'Helvetica Neue', sans-serif;
+}

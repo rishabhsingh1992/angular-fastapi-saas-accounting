@@ -23,6 +23,21 @@
       </nav>
       }
     </mat-card-content>
+
+    <mat-divider></mat-divider>
+
+    @if (currentUser(); as user) {
+    <div class="user-footer">
+      <div class="user-avatar" aria-hidden="true">{{ userInitials() }}</div>
+      <div class="user-info">
+        <span class="user-name">{{ user.name }}</span>
+        <span class="user-email">{{ user.email }}</span>
+      </div>
+      <button mat-icon-button class="logout-btn" (click)="logout()" matTooltip="Sign out" aria-label="Sign out">
+        <mat-icon>logout</mat-icon>
+      </button>
+    </div>
+    }
   </mat-card>
 </aside>
 

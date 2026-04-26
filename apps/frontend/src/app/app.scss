@@ -7,7 +7,7 @@
 	min-height: 100vh;
 	display: grid;
 	grid-template-columns: 280px 1fr;
-	background: #f4f7fb;
+	background: var(--mat-sys-surface-container-low);
 }
 
 .workspace {
@@ -17,8 +17,8 @@
 }
 
 .workspace-toolbar {
-	background: #ffffff;
-	border-bottom: 1px solid #d8e1ed;
+	background: var(--mat-sys-surface);
+	border-bottom: 1px solid var(--mat-sys-outline-variant);
 	padding: 12px 20px;
 	display: flex;
 	gap: 12px;
@@ -29,16 +29,30 @@ label {
 	display: grid;
 	gap: 4px;
 	font-size: 0.8rem;
-	color: #324154;
+	color: var(--mat-sys-on-surface-variant);
 }
 
 select {
 	min-width: 150px;
-	border: 1px solid #bdc9da;
+	border: 1px solid var(--mat-sys-outline);
 	border-radius: 8px;
 	padding: 6px 10px;
-	background: #ffffff;
-	color: #172235;
+	background: var(--mat-sys-surface);
+	color: var(--mat-sys-on-surface);
+}
+
+.toolbar-spacer {
+	flex: 1;
+}
+
+.theme-toggle {
+	color: var(--mat-sys-on-surface-variant);
+}
+
+.dark-theme select {
+	background: #1f2430;
+	border-color: #4b5563;
+	color: #f3f4f6;
 }
 
 .workspace-content {

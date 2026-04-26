@@ -1,30 +1,150 @@
 <section class="page">
-    <h1>Dashboard</h1>
-    <section class="cards">
-        <article class="card">
-            <h2>Total Revenue</h2>
-            <p>USD {{ summary().totalRevenue }}</p>
-        </article>
+    <header class="page-header">
+        <h1>Dashboard</h1>
+        <p>Financial overview and backend status</p>
+    </header>
 
-        <article class="card">
-            <h2>Total Invoices</h2>
-            <p>{{ summary().totalInvoices }}</p>
-        </article>
+    <section class="cards" aria-label="Summary cards">
+        <mat-card class="card metric revenue">
+            <mat-card-header>
+                <div mat-card-avatar class="card-avatar">
+                    <mat-icon>payments</mat-icon>
+                </div>
+                <mat-card-subtitle>Total Revenue</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <p class="metric-value">USD {{ summary().totalRevenue }}</p>
+            </mat-card-content>
+        </mat-card>
 
-        <article class="card">
-            <h2>Total Customers</h2>
-            <p>{{ summary().totalCustomers }}</p>
-        </article>
+        <mat-card class="card metric invoices">
+            <mat-card-header>
+                <div mat-card-avatar class="card-avatar">
+                    <mat-icon>receipt_long</mat-icon>
+                </div>
+                <mat-card-subtitle>Total Invoices</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <p class="metric-value">{{ summary().totalInvoices }}</p>
+            </mat-card-content>
+        </mat-card>
 
-        <article class="card health-card">
-            <div class="health-card-header">
-                <h2>Backend Health</h2>
-                <button type="button" (click)="refreshHealth()">Refresh</button>
-            </div>
-            <p class="health-message">{{ healthMessage() }}</p>
-            <span class="health-status" [class.up]="healthStatus() === 'up'" [class.down]="healthStatus() === 'down'">
-                {{ healthStatus() === 'loading' ? 'Checking' : (healthStatus() === 'up' ? 'Healthy' : 'Unavailable') }}
-            </span>
-        </article>
+        <mat-card class="card metric customers">
+            <mat-card-header>
+                <div mat-card-avatar class="card-avatar">
+                    <mat-icon>groups</mat-icon>
+                </div>
+                <mat-card-subtitle>Total Customers</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <p class="metric-value">{{ summary().totalCustomers }}</p>
+            </mat-card-content>
+        </mat-card>
+
+        <mat-card class="card health-card">
+            <mat-card-header>
+                <div mat-card-avatar class="card-avatar">
+                    <mat-icon>monitor_heart</mat-icon>
+                </div>
+                <mat-card-title>Backend Health</mat-card-title>
+                <button mat-stroked-button type="button" (click)="refreshHealth()">Refresh</button>
+            </mat-card-header>
+
+            <mat-card-content>
+                <p class="health-message">{{ healthMessage() }}</p>
+
+                @if (healthStatus() === 'loading') {
+                <div class="loading-state">
+                    <mat-progress-spinner mode="indeterminate" diameter="24"></mat-progress-spinner>
+                    <span>Checking</span>
+                </div>
+                }
+
+                <mat-chip class="health-status" [class.up]="healthStatus() === 'up'"
+                    [class.down]="healthStatus() === 'down'">
+                    {{ healthStatus() === 'loading' ? 'Checking' : (healthStatus() === 'up' ? 'Healthy' : 'Unavailable')
+                    }}
+                </mat-chip>
+            </mat-card-content>
+        </mat-card>
     </section>
+
+    <!-- ── QUICK ACTIONS ─────────────────────────────────────────── -->
+    <section class="quick-actions-section" aria-label="Quick actions">
+        <h2 class="section-title">Quick Actions</h2>
+        <div class="quick-actions-grid">
+            @for (action of quickActions; track action.label) {
+            <mat-card class="quick-action-card" [routerLink]="[action.route]" tabindex="0" role="button">
+                <mat-card-content>
+                    <mat-icon aria-hidden="true">{{ action.icon }}</mat-icon>
+                    <span>{{ action.label }}</span>
+                </mat-card-content>
+            </mat-card>
+            }
+        </div>
+    </section>
+
+    <!-- ── CHART + TABLE ROW ──────────────────────────────────────── -->
+    <div class="chart-table-row">
+
+        <!-- Revenue Trend -->
+        <mat-card class="section-card revenue-card">
+            <mat-card-header>
+                <mat-card-title>Revenue Trend</mat-card-title>
+                <mat-card-subtitle>Last 6 months</mat-card-subtitle>
+            </mat-card-header>
+            <mat-card-content>
+                <div class="chart-box">
+                    <canvas baseChart [type]="lineChartType" [data]="lineChartData"
+                        [options]="lineChartOptions()"></canvas>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+        <!-- Recent Invoices -->
+        <mat-card class="section-card invoices-card">
+            <mat-card-header>
+                <mat-card-title>Recent Invoices</mat-card-title>
+                <button mat-button color="primary" type="button" [routerLink]="['/invoices']">View All</button>
+            </mat-card-header>
+            <mat-card-content>
+                <div class="table-wrap">
+                    <table mat-table [dataSource]="recentInvoices">
+                        <ng-container matColumnDef="id">
+                            <th mat-header-cell *matHeaderCellDef>Invoice #</th>
+                            <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="client">
+                            <th mat-header-cell *matHeaderCellDef>Client</th>
+                            <td mat-cell *matCellDef="let row">{{ row.client }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="date">
+                            <th mat-header-cell *matHeaderCellDef>Date</th>
+                            <td mat-cell *matCellDef="let row">{{ row.date }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="amount">
+                            <th mat-header-cell *matHeaderCellDef>Amount</th>
+                            <td mat-cell *matCellDef="let row">{{ formatCurrency(row.amount) }}</td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="status">
+                            <th mat-header-cell *matHeaderCellDef>Status</th>
+                            <td mat-cell *matCellDef="let row">
+                                <mat-chip [class]="statusClass(row.status)">{{ row.status }}</mat-chip>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="invoiceColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: invoiceColumns" class="invoice-row"
+                            [routerLink]="['/invoices', row.id]"></tr>
+                    </table>
+                </div>
+            </mat-card-content>
+        </mat-card>
+
+    </div>
+
 </section>

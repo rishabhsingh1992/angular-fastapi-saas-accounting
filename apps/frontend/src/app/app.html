@@ -7,7 +7,7 @@
         <span>Role</span>
         <select (change)="onRoleChange(($any($event.target)).value)">
           @for (role of roles; track role) {
-            <option [value]="role" [selected]="role === currentRole()">{{ role }}</option>
+          <option [value]="role" [selected]="role === currentRole()">{{ role }}</option>
           }
         </select>
       </label>
@@ -16,10 +16,18 @@
         <span>Tenant</span>
         <select (change)="onTenantChange(($any($event.target)).value)">
           @for (tenant of tenants; track tenant) {
-            <option [value]="tenant" [selected]="tenant === tenantId()">{{ tenant }}</option>
+          <option [value]="tenant" [selected]="tenant === tenantId()">{{ tenant }}</option>
           }
         </select>
       </label>
+
+      <div class="toolbar-spacer"></div>
+
+      <button mat-icon-button type="button" class="theme-toggle"
+        [matTooltip]="isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'" (click)="toggleTheme()"
+        [attr.aria-label]="isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'">
+        <mat-icon>{{ isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+      </button>
     </header>
 
     <section class="workspace-content">

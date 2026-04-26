@@ -1,3 +1,155 @@
 .page {
     padding: 24px;
 }
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.page-header h1 {
+    margin: 0;
+    font-size: 2rem;
+    line-height: 1.2;
+}
+
+.page-header p {
+    margin: 6px 0 0;
+    color: var(--mat-sys-on-surface-variant);
+}
+
+.date-filter {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.range-field {
+    min-width: 320px;
+}
+
+.summary-strip {
+    margin-top: 20px;
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.summary-card {
+    border-radius: 14px;
+}
+
+.summary-card mat-card-content {
+    display: grid;
+    gap: 10px;
+}
+
+.summary-top {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    color: var(--mat-sys-on-surface-variant);
+}
+
+.summary-top mat-icon {
+    font-size: 20px;
+    width: 20px;
+    height: 20px;
+}
+
+.summary-card strong {
+    font-size: 1.35rem;
+    line-height: 1.2;
+}
+
+.tone-primary {
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+}
+
+.tone-secondary {
+    background: var(--mat-sys-secondary-container);
+    color: var(--mat-sys-on-secondary-container);
+}
+
+.tone-tertiary {
+    background: var(--mat-sys-tertiary-container);
+    color: var(--mat-sys-on-tertiary-container);
+}
+
+.tone-neutral {
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface);
+}
+
+.report-cards {
+    margin-top: 16px;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.report-card {
+    cursor: pointer;
+    border-radius: 14px;
+}
+
+.report-card:hover {
+    box-shadow: var(--mat-sys-level2);
+}
+
+.report-card mat-card-header {
+    min-height: 120px;
+}
+
+.exports-card {
+    margin-top: 16px;
+    border-radius: 14px;
+}
+
+.table-wrap {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.exports-table {
+    width: 100%;
+}
+
+router-outlet {
+    display: block;
+    margin-top: 20px;
+}
+
+@media (max-width: 1024px) {
+    .summary-strip {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 760px) {
+    .page {
+        padding: 16px;
+    }
+
+    .range-field {
+        min-width: 0;
+        width: 100%;
+    }
+
+    .date-filter {
+        width: 100%;
+    }
+
+    .summary-strip {
+        grid-template-columns: 1fr;
+    }
+
+    .report-cards {
+        grid-template-columns: 1fr;
+    }
+}

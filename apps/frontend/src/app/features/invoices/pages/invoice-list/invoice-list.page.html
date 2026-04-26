@@ -1,45 +1,172 @@
 <section class="page">
-    <mat-card class="invoice-list-card">
-        <mat-card-header>
-            <mat-card-title>Invoices</mat-card-title>
-            <mat-card-subtitle>Track invoice status and due dates</mat-card-subtitle>
-        </mat-card-header>
 
+    <!-- ── PAGE HEADER ──────────────────────────────────────────── -->
+    <header class="page-header">
+        <div>
+            <h1>Invoices</h1>
+            <p>{{ filteredInvoices().length }} invoices</p>
+        </div>
+        <button mat-flat-button color="primary" type="button" (click)="newInvoice()">
+            <mat-icon>add</mat-icon>
+            New Invoice
+        </button>
+    </header>
+
+    <!-- ── FILTERS BAR ──────────────────────────────────────────── -->
+    <mat-card class="filters-card">
         <mat-card-content>
-            <table mat-table [dataSource]="invoices()" class="invoice-table">
-                <ng-container matColumnDef="invoice">
-                    <th mat-header-cell *matHeaderCellDef>Invoice</th>
-                    <td mat-cell *matCellDef="let invoice">{{ invoice.invoiceNumber }}</td>
-                </ng-container>
+            <div class="filters-row">
+                <mat-form-field appearance="outline" class="filter-field search-field">
+                    <mat-icon matPrefix>search</mat-icon>
+                    <mat-label>Search</mat-label>
+                    <input matInput placeholder="Search by client or invoice number" [value]="filterSearch()"
+                        (input)="filterSearch.set($any($event.target).value)" />
+                </mat-form-field>
 
-                <ng-container matColumnDef="client">
-                    <th mat-header-cell *matHeaderCellDef>Client</th>
-                    <td mat-cell *matCellDef="let invoice">{{ invoice.clientName }}</td>
-                </ng-container>
+                <mat-form-field appearance="outline" class="filter-field status-field">
+                    <mat-label>All Statuses</mat-label>
+                    <mat-select [value]="filterStatus()" (valueChange)="filterStatus.set($event)">
+                        @for (opt of statusOptions; track opt) {
+                        <mat-option [value]="opt">{{ opt }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
 
-                <ng-container matColumnDef="dueDate">
-                    <th mat-header-cell *matHeaderCellDef>Due Date</th>
-                    <td mat-cell *matCellDef="let invoice">{{ invoice.dueDate }}</td>
-                </ng-container>
+                <mat-form-field appearance="outline" class="filter-field sort-field">
+                    <mat-label>Sort by</mat-label>
+                    <mat-select [value]="sortBy()" (valueChange)="sortBy.set($event)">
+                        @for (opt of sortOptions; track opt.value) {
+                        <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
 
-                <ng-container matColumnDef="status">
-                    <th mat-header-cell *matHeaderCellDef>Status</th>
-                    <td mat-cell *matCellDef="let invoice">
-                        <mat-chip class="status-chip" [class.paid]="invoice.status === 'paid'">{{ invoice.status
-                            }}</mat-chip>
-                    </td>
-                </ng-container>
-
-                <ng-container matColumnDef="action">
-                    <th mat-header-cell *matHeaderCellDef>Action</th>
-                    <td mat-cell *matCellDef="let invoice">
-                        <a mat-stroked-button [routerLink]="['/invoices', invoice.id]">View</a>
-                    </td>
-                </ng-container>
-
-                <tr mat-header-row *matHeaderRowDef="['invoice', 'client', 'dueDate', 'status', 'action']"></tr>
-                <tr mat-row *matRowDef="let row; columns: ['invoice', 'client', 'dueDate', 'status', 'action']"></tr>
-            </table>
+                @if (hasActiveFilter()) {
+                <button mat-stroked-button type="button" (click)="clearFilters()" class="clear-btn">
+                    Clear
+                </button>
+                }
+            </div>
         </mat-card-content>
     </mat-card>
+
+    <!-- ── SUMMARY STRIP ────────────────────────────────────────── -->
+    <div class="summary-strip" aria-label="Invoice summary">
+        <span class="stat-chip">Total: <strong>{{ formatCurrency(totalAmount()) }}</strong></span>
+        <span class="stat-chip paid-chip">Paid: <strong>{{ paidCount() }}</strong></span>
+        <span class="stat-chip overdue-chip">Overdue: <strong>{{ overdueCount() }}</strong></span>
+        <span class="stat-chip draft-chip">Draft: <strong>{{ draftCount() }}</strong></span>
+    </div>
+
+    <!-- ── INVOICE TABLE ─────────────────────────────────────────── -->
+    @if (filteredInvoices().length > 0) {
+    <mat-card class="invoice-list-card">
+        <mat-card-content>
+            <div class="table-scroll">
+                <table mat-table [dataSource]="dataSource" class="invoice-table">
+
+                    <!-- Invoice # -->
+                    <ng-container matColumnDef="id">
+                        <th mat-header-cell *matHeaderCellDef>Invoice #</th>
+                        <td mat-cell *matCellDef="let row">
+                            <div class="invoice-id-cell">
+                                <strong>{{ row.id }}</strong>
+                                <small>{{ row.email }}</small>
+                            </div>
+                        </td>
+                    </ng-container>
+
+                    <!-- Client -->
+                    <ng-container matColumnDef="client">
+                        <th mat-header-cell *matHeaderCellDef>Client</th>
+                        <td mat-cell *matCellDef="let row">
+                            <div class="client-cell">
+                                <div class="client-avatar" aria-hidden="true">{{ clientInitial(row.client) }}</div>
+                                <span>{{ row.client }}</span>
+                            </div>
+                        </td>
+                    </ng-container>
+
+                    <!-- Amount -->
+                    <ng-container matColumnDef="amount">
+                        <th mat-header-cell *matHeaderCellDef class="amount-header">Amount</th>
+                        <td mat-cell *matCellDef="let row" class="amount-cell">
+                            {{ formatCurrency(row.amount) }}
+                        </td>
+                    </ng-container>
+
+                    <!-- Status -->
+                    <ng-container matColumnDef="status">
+                        <th mat-header-cell *matHeaderCellDef>Status</th>
+                        <td mat-cell *matCellDef="let row">
+                            <mat-chip [class]="statusClass(row.status)">{{ row.status }}</mat-chip>
+                        </td>
+                    </ng-container>
+
+                    <!-- Due Date -->
+                    <ng-container matColumnDef="dueDate">
+                        <th mat-header-cell *matHeaderCellDef>Due Date</th>
+                        <td mat-cell *matCellDef="let row">
+                            <div class="due-date-cell" [class.is-overdue]="row.status === 'Overdue'">
+                                <span>{{ row.dueDate }}</span>
+                                @if (row.status === 'Overdue') {
+                                <small class="overdue-label">Overdue</small>
+                                }
+                            </div>
+                        </td>
+                    </ng-container>
+
+                    <!-- Actions -->
+                    <ng-container matColumnDef="actions">
+                        <th mat-header-cell *matHeaderCellDef></th>
+                        <td mat-cell *matCellDef="let row" class="actions-cell">
+                            <button mat-icon-button type="button" matTooltip="View Invoice"
+                                [routerLink]="['/invoices', row.id]" aria-label="View invoice">
+                                <mat-icon>visibility</mat-icon>
+                            </button>
+                            <button mat-icon-button type="button" [matMenuTriggerFor]="rowMenu"
+                                [matMenuTriggerData]="{ invoice: row }" aria-label="More actions">
+                                <mat-icon>more_vert</mat-icon>
+                            </button>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns" class="invoice-row"></tr>
+                </table>
+            </div>
+
+            <mat-paginator [pageSize]="8" [pageSizeOptions]="[8, 16, 24]" showFirstLastButtons></mat-paginator>
+        </mat-card-content>
+    </mat-card>
+    }
+
+    <!-- ── EMPTY STATE ───────────────────────────────────────────── -->
+    @if (filteredInvoices().length === 0) {
+    <div class="empty-state" role="status">
+        <mat-icon aria-hidden="true">search_off</mat-icon>
+        <h2>No invoices found</h2>
+        <p>Try adjusting your search or filters</p>
+        <button mat-stroked-button type="button" (click)="clearFilters()">Clear Filters</button>
+    </div>
+    }
+
 </section>
+
+<!-- Shared row-action menu (one instance, data passed via matMenuTriggerData) -->
+<mat-menu #rowMenu>
+    <ng-template matMenuContent let-invoice="invoice">
+        <button mat-menu-item type="button" (click)="markAsPaid(invoice)">
+            <mat-icon>check_circle</mat-icon>
+            Mark as Paid
+        </button>
+        <button mat-menu-item type="button" (click)="downloadPdf()">
+            <mat-icon>download</mat-icon>
+            Download PDF
+        </button>
+        <button mat-menu-item type="button" class="delete-item" (click)="deleteInvoice(invoice)">
+            <mat-icon>delete</mat-icon>
+            Delete
+        </button>
+    </ng-template>
+</mat-menu>

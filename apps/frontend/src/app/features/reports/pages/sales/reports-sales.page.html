@@ -1,4 +1,135 @@
-<div class="report-card">
-    <h2>Sales Report</h2>
-    <p>Sales pipeline by region, cohort, and period.</p>
-</div>
+<section class="page">
+    <header class="page-header">
+        <div class="title-wrap">
+            <button mat-icon-button type="button" [routerLink]="['../']" aria-label="Back to reports">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <div>
+                <h1>Sales Report</h1>
+                <p>Nov 2025 – Apr 2026</p>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <mat-button-toggle-group [value]="selectedRange" (valueChange)="selectedRange = $any($event)"
+                aria-label="Range selector">
+                <mat-button-toggle value="3M">3M</mat-button-toggle>
+                <mat-button-toggle value="6M">6M</mat-button-toggle>
+                <mat-button-toggle value="1Y">1Y</mat-button-toggle>
+            </mat-button-toggle-group>
+
+            <button mat-flat-button color="primary" type="button" (click)="exportPdf()">
+                <mat-icon>download</mat-icon>
+                Export PDF
+            </button>
+        </div>
+    </header>
+
+    <section class="kpi-strip" aria-label="Key performance indicators">
+        @for (kpi of kpis; track kpi.label) {
+        <mat-card class="kpi-card">
+            <mat-card-content>
+                <div class="kpi-head">
+                    <mat-icon aria-hidden="true">{{ kpi.icon }}</mat-icon>
+                    @if (kpi.label === 'Growth vs Last Period') {
+                    <mat-chip class="growth-chip" color="primary">{{ kpi.value }}</mat-chip>
+                    } @else {
+                    <strong>{{ kpi.value }}</strong>
+                    }
+                </div>
+                <p>{{ kpi.label }}</p>
+            </mat-card-content>
+        </mat-card>
+        }
+    </section>
+
+    <mat-card class="section-card">
+        <mat-card-header>
+            <mat-card-title>Monthly Revenue</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <div class="chart-box revenue-chart-box">
+                <canvas baseChart [type]="barChartType" [data]="barChartData" [options]="barChartOptions()"></canvas>
+            </div>
+        </mat-card-content>
+    </mat-card>
+
+    <mat-card class="section-card">
+        <mat-card-header>
+            <mat-card-title>Invoice Status</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="status-layout">
+            <div class="chart-box">
+                <canvas baseChart [type]="doughnutChartType" [data]="doughnutChartData"
+                    [options]="doughnutChartOptions()"></canvas>
+            </div>
+
+            <mat-list class="status-list" role="list">
+                @for (item of invoiceStatus; track item.status) {
+                <mat-list-item role="listitem">
+                    <div class="status-row">
+                        <div class="status-left">
+                            <mat-chip [class]="statusChipClass(item.status)">{{ item.status }}</mat-chip>
+                            <span>{{ item.count }} invoices</span>
+                        </div>
+                        <div class="status-right">
+                            <strong>{{ formatCurrency(item.amount) }}</strong>
+                            <small>{{ invoiceStatusPercent(item) }} of total</small>
+                        </div>
+                    </div>
+                </mat-list-item>
+                }
+            </mat-list>
+        </mat-card-content>
+    </mat-card>
+
+    <mat-card class="section-card">
+        <mat-card-header>
+            <mat-card-title>Top Clients by Revenue</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <div class="table-wrap">
+                <table mat-table [dataSource]="topClientsDataSource" matSort>
+                    <ng-container matColumnDef="rank">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Rank</th>
+                        <td mat-cell *matCellDef="let row">{{ row.rank }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="client">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Client</th>
+                        <td mat-cell *matCellDef="let row">{{ row.name }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="invoices">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Invoices</th>
+                        <td mat-cell *matCellDef="let row">{{ row.invoices }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="revenue">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Revenue</th>
+                        <td mat-cell *matCellDef="let row">{{ formatCurrency(row.revenue) }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="paid">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Paid</th>
+                        <td mat-cell *matCellDef="let row">{{ formatCurrency(row.paid) }}</td>
+                    </ng-container>
+
+                    <ng-container matColumnDef="outstanding">
+                        <th mat-header-cell *matHeaderCellDef mat-sort-header>Outstanding</th>
+                        <td mat-cell *matCellDef="let row">
+                            @if (row.outstanding > 0) {
+                            <mat-chip color="warn">{{ formatCurrency(row.outstanding) }}</mat-chip>
+                            } @else {
+                            {{ formatCurrency(row.outstanding) }}
+                            }
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                    <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+                </table>
+            </div>
+        </mat-card-content>
+    </mat-card>
+</section>

@@ -1,10 +1,120 @@
 .page {
     padding: 24px;
+    display: grid;
+    gap: 14px;
 }
 
+// ── PAGE HEADER ─────────────────────────────────────────────────
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.page-header h1 {
+    margin: 0;
+    font-size: 1.9rem;
+    line-height: 1.2;
+}
+
+.page-header p {
+    margin: 6px 0 0;
+    color: var(--mat-sys-on-surface-variant);
+}
+
+// ── FILTERS ─────────────────────────────────────────────────────
+.filters-card {
+    border-radius: 14px;
+}
+
+.filters-card mat-card-content {
+    padding-bottom: 0 !important;
+}
+
+.filters-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.filter-field {
+    margin-bottom: 0;
+}
+
+.search-field {
+    flex: 2 1 260px;
+}
+
+.status-field,
+.sort-field {
+    flex: 1 1 160px;
+}
+
+.clear-btn {
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+// ── SUMMARY STRIP ───────────────────────────────────────────────
+.summary-strip {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.stat-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    background: var(--mat-sys-surface-container-high);
+    color: var(--mat-sys-on-surface);
+}
+
+.paid-chip {
+    background: #dcfce7;
+    color: #166534;
+
+    .dark-theme & {
+        background: #14532d;
+        color: #bbf7d0;
+    }
+}
+
+.overdue-chip {
+    background: #fee2e2;
+    color: #991b1b;
+
+    .dark-theme & {
+        background: #7f1d1d;
+        color: #fecaca;
+    }
+}
+
+.draft-chip {
+    background: #f1f5f9;
+    color: #475569;
+
+    .dark-theme & {
+        background: #334155;
+        color: #e2e8f0;
+    }
+}
+
+// ── TABLE CARD ──────────────────────────────────────────────────
 .invoice-list-card {
-    max-width: 1100px;
-    margin: 0 auto;
+    border-radius: 14px;
+}
+
+.table-scroll {
+    width: 100%;
+    overflow-x: auto;
 }
 
 .invoice-table {
@@ -13,31 +123,211 @@
 
 .invoice-table .mat-mdc-header-row {
     background: #f8fafc;
+
+    .dark-theme & {
+        background: #1f2937;
+    }
 }
 
 .invoice-table .mat-mdc-header-cell {
     color: #475569;
     font-weight: 700;
+
+    .dark-theme & {
+        color: #cbd5e1;
+    }
 }
 
-.status-chip {
-    text-transform: uppercase;
-    font-weight: 700;
+.invoice-row {
+    cursor: default;
+}
+
+.invoice-row:hover {
+    background: #f8fafc;
+
+    .dark-theme & {
+        background: #1f2937;
+    }
+}
+
+// ── ID CELL ─────────────────────────────────────────────────────
+.invoice-id-cell {
+    display: grid;
+    gap: 2px;
+}
+
+.invoice-id-cell strong {
+    font-size: 0.9rem;
+}
+
+.invoice-id-cell small {
     font-size: 0.75rem;
+    color: var(--mat-sys-on-surface-variant);
+}
+
+// ── CLIENT CELL ─────────────────────────────────────────────────
+.client-cell {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.client-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    font-size: 0.85rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+}
+
+// ── AMOUNT CELL ─────────────────────────────────────────────────
+.amount-header,
+.amount-cell {
+    text-align: right;
+}
+
+.amount-cell {
+    font-weight: 600;
+}
+
+// ── DUE DATE CELL ───────────────────────────────────────────────
+.due-date-cell {
+    display: grid;
+    gap: 2px;
+}
+
+.due-date-cell.is-overdue span {
+    color: #dc2626;
+    font-weight: 600;
+
+    .dark-theme & {
+        color: #fca5a5;
+    }
+}
+
+.overdue-label {
+    font-size: 0.72rem;
+    color: #dc2626;
+    font-weight: 700;
+    text-transform: uppercase;
     letter-spacing: 0.04em;
-    color: #854d0e;
-    background: #fef3c7;
+
+    .dark-theme & {
+        color: #fca5a5;
+    }
 }
 
-.status-chip.paid {
-    color: #166534;
-    background: #dcfce7;
+// ── ACTIONS CELL ────────────────────────────────────────────────
+.actions-cell {
+    white-space: nowrap;
 }
 
+.delete-item {
+    color: var(--mat-sys-error);
+}
+
+.delete-item mat-icon {
+    color: var(--mat-sys-error);
+}
+
+// ── STATUS CHIPS ────────────────────────────────────────────────
+.status-chip-paid {
+    background: #dcfce7 !important;
+    color: #166534 !important;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.03em;
+
+    .dark-theme & {
+        background: #14532d !important;
+        color: #bbf7d0 !important;
+    }
+}
+
+.status-chip-overdue {
+    background: #fee2e2 !important;
+    color: #991b1b !important;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.03em;
+
+    .dark-theme & {
+        background: #7f1d1d !important;
+        color: #fecaca !important;
+    }
+}
+
+.status-chip-sent {
+    background: #dbeafe !important;
+    color: #1d4ed8 !important;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.03em;
+
+    .dark-theme & {
+        background: #1e3a8a !important;
+        color: #bfdbfe !important;
+    }
+}
+
+.status-chip-draft {
+    background: #f1f5f9 !important;
+    color: #475569 !important;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.03em;
+
+    .dark-theme & {
+        background: #334155 !important;
+        color: #e2e8f0 !important;
+    }
+}
+
+// ── EMPTY STATE ─────────────────────────────────────────────────
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 64px 24px;
+    gap: 10px;
+    text-align: center;
+}
+
+.empty-state mat-icon {
+    font-size: 64px;
+    width: 64px;
+    height: 64px;
+    color: var(--mat-sys-on-surface-variant);
+    opacity: 0.5;
+}
+
+.empty-state h2 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.empty-state p {
+    margin: 0;
+    color: var(--mat-sys-on-surface-variant);
+}
+
+// ── RESPONSIVE ──────────────────────────────────────────────────
 @media (max-width: 900px) {
+    .page {
+        padding: 16px;
+    }
+
+    .search-field {
+        flex: 1 1 100%;
+    }
+
     .invoice-table {
-        min-width: 760px;
-        display: block;
-        overflow-x: auto;
+        min-width: 700px;
     }
 }

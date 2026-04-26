@@ -1,4 +1,158 @@
-<div class="report-card">
-    <h2>Finance Report</h2>
-    <p>Cashflow, liabilities, and P&L trend insights.</p>
-</div>
+<section class="page">
+
+    <!-- ── PAGE HEADER ───────────────────────────────────────────── -->
+    <header class="page-header">
+        <div class="title-wrap">
+            <button mat-icon-button type="button" [routerLink]="['../']" aria-label="Back to reports">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <div>
+                <h1>Finance Report</h1>
+                <p>Nov 2025 – Apr 2026</p>
+            </div>
+        </div>
+
+        <div class="header-actions">
+            <mat-button-toggle-group [value]="selectedRange" (valueChange)="selectedRange = $any($event)"
+                aria-label="Range selector">
+                <mat-button-toggle value="3M">3M</mat-button-toggle>
+                <mat-button-toggle value="6M">6M</mat-button-toggle>
+                <mat-button-toggle value="1Y">1Y</mat-button-toggle>
+            </mat-button-toggle-group>
+
+            <button mat-flat-button color="primary" type="button" (click)="exportPdf()">
+                <mat-icon>download</mat-icon>
+                Export PDF
+            </button>
+        </div>
+    </header>
+
+    <!-- ── KPI STRIP ─────────────────────────────────────────────── -->
+    <section class="kpi-strip" aria-label="Finance KPIs">
+        @for (kpi of kpis; track kpi.label) {
+        <mat-card class="kpi-card">
+            <mat-card-content>
+                <div class="kpi-head">
+                    <mat-icon aria-hidden="true">{{ kpi.icon }}</mat-icon>
+                    @if (kpi.isChip) {
+                    <mat-chip class="margin-chip">{{ kpi.value }}</mat-chip>
+                    } @else {
+                    <strong>{{ kpi.value }}</strong>
+                    }
+                </div>
+                <p>{{ kpi.label }}</p>
+            </mat-card-content>
+        </mat-card>
+        }
+    </section>
+
+    <!-- ── PROFIT & LOSS CHART ───────────────────────────────────── -->
+    <mat-card class="section-card">
+        <mat-card-header>
+            <mat-card-title>Profit &amp; Loss — Monthly</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <div class="chart-box">
+                <canvas baseChart [type]="barChartType" [data]="barChartData" [options]="barChartOptions()"></canvas>
+            </div>
+        </mat-card-content>
+    </mat-card>
+
+    <!-- ── EXPENSE BREAKDOWN ─────────────────────────────────────── -->
+    <mat-card class="section-card">
+        <mat-card-header>
+            <mat-card-title>Expense Breakdown</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="expense-layout">
+            <div class="chart-box">
+                <canvas baseChart [type]="doughnutChartType" [data]="doughnutChartData"
+                    [options]="doughnutChartOptions()"></canvas>
+            </div>
+
+            <mat-list class="expense-list" role="list">
+                @for (item of expenseBreakdown; track item.category) {
+                <mat-list-item role="listitem">
+                    <div class="expense-row">
+                        <div class="expense-meta">
+                            <span class="expense-name">{{ item.category }}</span>
+                            <span class="expense-amount">{{ formatCurrency(item.amount) }}</span>
+                        </div>
+                        <mat-progress-bar mode="determinate" [value]="item.percentage"></mat-progress-bar>
+                        <small class="expense-pct">{{ item.percentage }}%</small>
+                    </div>
+                </mat-list-item>
+                }
+            </mat-list>
+        </mat-card-content>
+    </mat-card>
+
+    <!-- ── CASH FLOW CHART ───────────────────────────────────────── -->
+    <mat-card class="section-card">
+        <mat-card-header>
+            <mat-card-title>Cash Flow</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <div class="chart-box">
+                <canvas baseChart [type]="lineChartType" [data]="lineChartData" [options]="lineChartOptions()"></canvas>
+            </div>
+        </mat-card-content>
+    </mat-card>
+
+    <!-- ── TAX SUMMARY ───────────────────────────────────────────── -->
+    <mat-card class="section-card">
+        <mat-card-header>
+            <mat-card-title>Tax Summary (FY 2025–26)</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+            <div class="tax-grid">
+                <mat-list class="tax-col" role="list" aria-label="Income tax">
+                    <mat-list-item role="listitem">
+                        <div class="tax-row">
+                            <span>Total Revenue</span>
+                            <strong>{{ formatCurrency(taxSummary.totalRevenue) }}</strong>
+                        </div>
+                    </mat-list-item>
+                    <mat-list-item role="listitem">
+                        <div class="tax-row">
+                            <span>Taxable Income</span>
+                            <strong>{{ formatCurrency(taxSummary.taxableIncome) }}</strong>
+                        </div>
+                    </mat-list-item>
+                    <mat-list-item role="listitem">
+                        <div class="tax-row">
+                            <span>Est. Income Tax</span>
+                            <strong>{{ formatCurrency(taxSummary.incomeTaxEst) }}</strong>
+                        </div>
+                    </mat-list-item>
+                </mat-list>
+
+                <mat-list class="tax-col" role="list" aria-label="GST summary">
+                    <mat-list-item role="listitem">
+                        <div class="tax-row">
+                            <span>GST Collected</span>
+                            <strong>{{ formatCurrency(taxSummary.gstCollected) }}</strong>
+                        </div>
+                    </mat-list-item>
+                    <mat-list-item role="listitem">
+                        <div class="tax-row">
+                            <span>GST Paid</span>
+                            <strong>{{ formatCurrency(taxSummary.gstPaid) }}</strong>
+                        </div>
+                    </mat-list-item>
+                    <mat-list-item role="listitem">
+                        <div class="tax-row net-gst">
+                            <span>Net GST Payable</span>
+                            <strong>{{ formatCurrency(taxSummary.netGstPayable) }}</strong>
+                        </div>
+                    </mat-list-item>
+                </mat-list>
+            </div>
+
+            <mat-divider></mat-divider>
+            <p class="tax-disclaimer mat-caption">
+                Tax figures are estimates based on mock data. Consult a CA for accurate filing.
+            </p>
+        </mat-card-content>
+    </mat-card>
+
+</section>

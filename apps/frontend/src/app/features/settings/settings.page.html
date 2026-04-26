@@ -1,4 +1,168 @@
 <section class="page">
-    <h1>Settings</h1>
-    <p>Configure workspace preferences, users, and integrations.</p>
+    <mat-card class="settings-shell">
+        <div class="settings-layout">
+            <aside class="settings-sidebar" aria-label="Settings sections">
+                <h2>Settings</h2>
+                <mat-nav-list>
+                    <button mat-list-item type="button" [class.active]="selectedTab() === 'profile'"
+                        (click)="selectTab('profile')">
+                        Profile
+                    </button>
+                    <button mat-list-item type="button" [class.active]="selectedTab() === 'company'"
+                        (click)="selectTab('company')">
+                        Company
+                    </button>
+                    <button mat-list-item type="button" [class.active]="selectedTab() === 'notifications'"
+                        (click)="selectTab('notifications')">
+                        Notifications
+                    </button>
+                    <button mat-list-item type="button" [class.active]="selectedTab() === 'danger'"
+                        (click)="selectTab('danger')">
+                        Danger Zone
+                    </button>
+                </mat-nav-list>
+            </aside>
+
+            <div class="settings-content">
+                @if (selectedTab() === 'profile') {
+                <mat-card class="content-card">
+                    <mat-card-header>
+                        <div class="profile-avatar" mat-card-avatar>
+                            <mat-icon aria-hidden="true">person</mat-icon>
+                            <span>{{ initials }}</span>
+                        </div>
+                        <mat-card-title>Profile Settings</mat-card-title>
+                        <mat-card-subtitle>Manage your personal account details.</mat-card-subtitle>
+                    </mat-card-header>
+
+                    <mat-card-content>
+                        <div class="form-grid">
+                            <mat-form-field appearance="outline" class="field">
+                                <mat-label>Full name</mat-label>
+                                <input matInput [value]="profile.name"
+                                    (input)="profile.name = $any($event.target).value" />
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="field">
+                                <mat-label>Email</mat-label>
+                                <input matInput type="email" [value]="profile.email" [disabled]="true" />
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="field">
+                                <mat-label>Phone</mat-label>
+                                <input matInput [value]="profile.phone"
+                                    (input)="profile.phone = $any($event.target).value" />
+                            </mat-form-field>
+                        </div>
+                    </mat-card-content>
+
+                    <mat-card-actions align="end">
+                        <button mat-flat-button color="primary" type="button" (click)="saveProfile()">Save</button>
+                    </mat-card-actions>
+                </mat-card>
+                }
+
+                @if (selectedTab() === 'company') {
+                <mat-card class="content-card">
+                    <mat-card-header>
+                        <mat-card-title>Company / Tenant Settings</mat-card-title>
+                        <mat-card-subtitle>Update organization preferences and locale defaults.</mat-card-subtitle>
+                    </mat-card-header>
+
+                    <mat-card-content>
+                        <div class="form-grid two-column">
+                            <mat-form-field appearance="outline" class="field">
+                                <mat-label>Company name</mat-label>
+                                <input matInput [value]="company.name"
+                                    (input)="company.name = $any($event.target).value" />
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="field">
+                                <mat-label>Company email</mat-label>
+                                <input matInput type="email" [value]="company.email"
+                                    (input)="company.email = $any($event.target).value" />
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="field">
+                                <mat-label>Tax ID</mat-label>
+                                <input matInput [value]="company.taxId"
+                                    (input)="company.taxId = $any($event.target).value" />
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="field">
+                                <mat-label>Currency</mat-label>
+                                <mat-select [value]="company.currency" (valueChange)="company.currency = $any($event)">
+                                    @for (currency of currencyOptions; track currency) {
+                                    <mat-option [value]="currency">{{ currency }}</mat-option>
+                                    }
+                                </mat-select>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline" class="field span-two">
+                                <mat-label>Timezone</mat-label>
+                                <mat-select [value]="company.timezone" (valueChange)="company.timezone = $any($event)">
+                                    @for (timezone of timezoneOptions; track timezone) {
+                                    <mat-option [value]="timezone">{{ timezone }}</mat-option>
+                                    }
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+                    </mat-card-content>
+
+                    <mat-card-actions align="end">
+                        <button mat-flat-button color="primary" type="button" (click)="saveCompany()">Save</button>
+                    </mat-card-actions>
+                </mat-card>
+                }
+
+                @if (selectedTab() === 'notifications') {
+                <mat-card class="content-card">
+                    <mat-card-header>
+                        <mat-card-title>Notifications</mat-card-title>
+                        <mat-card-subtitle>Choose which updates should be delivered to your inbox.</mat-card-subtitle>
+                    </mat-card-header>
+
+                    <mat-card-content>
+                        <div class="notification-list">
+                            @for (option of notificationOptions; track option.key) {
+                            <mat-slide-toggle [checked]="notifications[option.key]"
+                                (change)="onNotificationToggle(option.key, $event.checked)">
+                                {{ option.label }}
+                            </mat-slide-toggle>
+                            }
+                        </div>
+                    </mat-card-content>
+
+                    <mat-card-actions align="end">
+                        <button mat-flat-button color="primary" type="button" (click)="saveNotifications()">
+                            Save
+                        </button>
+                    </mat-card-actions>
+                </mat-card>
+                }
+
+                @if (selectedTab() === 'danger') {
+                <mat-card class="content-card danger-card">
+                    <mat-card-header>
+                        <mat-card-title>Delete Account</mat-card-title>
+                        <mat-card-subtitle>Danger Zone</mat-card-subtitle>
+                    </mat-card-header>
+
+                    <mat-card-content>
+                        <p>
+                            Deleting your account is permanent and cannot be undone. This action removes all
+                            tenant data, users, invoices, and financial records.
+                        </p>
+                    </mat-card-content>
+
+                    <mat-card-actions align="end">
+                        <button mat-stroked-button color="warn" type="button" (click)="openDeleteConfirmation()">
+                            Delete Account
+                        </button>
+                    </mat-card-actions>
+                </mat-card>
+                }
+            </div>
+        </div>
+    </mat-card>
 </section>
