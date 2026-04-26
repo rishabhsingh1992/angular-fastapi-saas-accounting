@@ -1,0 +1,32 @@
+[
+  {
+    "id": "dashboard",
+    "label": "Dashboard",
+    "route": "/dashboard",
+    "allowedRoles": ["admin", "manager", "analyst", "viewer"]
+  },
+  {
+    "id": "invoices",
+    "label": "Invoices",
+    "route": "/invoices",
+    "allowedRoles": ["admin", "manager", "analyst"]
+  },
+  {
+    "id": "expenses",
+    "label": "Expenses",
+    "route": "/expenses",
+    "allowedRoles": ["admin", "manager", "analyst"]
+  },
+  {
+    "id": "reports",
+    "label": "Reports",
+    "route": "/reports",
+    "allowedRoles": ["admin", "manager", "analyst", "viewer"]
+  },
+  {
+    "id": "settings",
+    "label": "Settings",
+    "route": "/settings",
+    "allowedRoles": ["admin", "manager"]
+  }
+]

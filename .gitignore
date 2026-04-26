@@ -1,0 +1,57 @@
+# -----------------------------
+# OS and editor files
+# -----------------------------
+.DS_Store
+Thumbs.db
+
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+.history/
+
+# -----------------------------
+# Frontend (Angular / Node)
+# -----------------------------
+apps/frontend/node_modules/
+apps/frontend/dist/
+apps/frontend/tmp/
+apps/frontend/out-tsc/
+apps/frontend/bazel-out/
+apps/frontend/.angular/cache/
+apps/frontend/coverage/
+
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# -----------------------------
+# Backend (Python)
+# -----------------------------
+apps/backend/.venv/
+apps/backend/venv/
+apps/backend/env/
+apps/backend/__pycache__/
+apps/backend/.pytest_cache/
+apps/backend/.mypy_cache/
+apps/backend/.ruff_cache/
+apps/backend/.coverage
+apps/backend/htmlcov/
+
+*.pyc
+*.pyo
+*.pyd
+
+# -----------------------------
+# Environment and secrets
+# -----------------------------
+apps/backend/.env
+apps/backend/.env.*
+!apps/backend/.env.example
+
+# Generic env files
+.env
+.env.*
+!.env.example

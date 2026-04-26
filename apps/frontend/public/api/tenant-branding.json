@@ -1,0 +1,31 @@
+{
+  "tenants": [
+    {
+      "tenantId": "default",
+      "tenantName": "Northwind Books",
+      "logoUrl": "https://dummyimage.com/176x48/0b1f44/eaf2ff&text=Northwind+Books",
+      "primaryColor": "#2553a6",
+      "surfaceColor": "#0b1f44",
+      "textColor": "#eaf2ff",
+      "accentColor": "#62a5ff"
+    },
+    {
+      "tenantId": "aurora",
+      "tenantName": "Aurora Freight",
+      "logoUrl": "https://dummyimage.com/176x48/123524/f3fff8&text=Aurora+Freight",
+      "primaryColor": "#1f8a5b",
+      "surfaceColor": "#123524",
+      "textColor": "#f3fff8",
+      "accentColor": "#5be7a1"
+    },
+    {
+      "tenantId": "atlas",
+      "tenantName": "Atlas Capital",
+      "logoUrl": "https://dummyimage.com/176x48/2f153e/fff5ff&text=Atlas+Capital",
+      "primaryColor": "#8a2be2",
+      "surfaceColor": "#2f153e",
+      "textColor": "#fff5ff",
+      "accentColor": "#ff8ae6"
+    }
+  ]
+}

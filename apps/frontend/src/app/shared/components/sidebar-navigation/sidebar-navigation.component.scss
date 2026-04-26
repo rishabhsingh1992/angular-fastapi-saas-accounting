@@ -1,0 +1,123 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.sidebar {
+  width: 280px;
+  min-height: 100vh;
+  border-right: 1px solid color-mix(in srgb, var(--brand-accent), transparent 75%);
+  padding: 20px 14px;
+}
+
+.brand-header {
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid color-mix(in srgb, var(--brand-accent), transparent 70%);
+}
+
+.brand-logo {
+  width: 176px;
+  height: 48px;
+  object-fit: cover;
+  border-radius: 8px;
+  display: block;
+}
+
+.tenant-name {
+  margin: 10px 0 0;
+  font-size: 0.9rem;
+  opacity: 0.85;
+}
+
+.menu {
+  display: block;
+}
+
+.menu-level {
+  list-style: none;
+  margin: 0;
+  padding-top: 0;
+  padding-right: 0;
+  padding-bottom: 0;
+}
+
+.menu-item {
+  width: 100%;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 12px;
+  text-align: left;
+  text-decoration: none;
+  color: inherit;
+  background: transparent;
+  cursor: pointer;
+}
+
+.menu-item:hover {
+  background: color-mix(in srgb, var(--brand-primary), transparent 84%);
+}
+
+.menu-item.active,
+.menu-item.active-parent {
+  background: color-mix(in srgb, var(--brand-primary), transparent 72%);
+  box-shadow: inset 3px 0 0 var(--brand-accent);
+}
+
+.menu-label {
+  font-size: 0.95rem;
+  font-weight: 500;
+}
+
+.chevron {
+  transition: transform 0.2s ease;
+}
+
+.chevron.open {
+  transform: rotate(180deg);
+}
+
+.loading-shell {
+  display: grid;
+  gap: 10px;
+}
+
+.skeleton-line {
+  height: 36px;
+  border-radius: 10px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  background-size: 200% 100%;
+  animation: pulse 1.2s linear infinite;
+}
+
+.skeleton-line.short {
+  width: 75%;
+}
+
+@keyframes pulse {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 900px) {
+  .sidebar {
+    width: 100%;
+    min-height: auto;
+    border-right: 0;
+    border-bottom: 1px solid color-mix(in srgb, var(--brand-accent), transparent 75%);
+  }
+}
