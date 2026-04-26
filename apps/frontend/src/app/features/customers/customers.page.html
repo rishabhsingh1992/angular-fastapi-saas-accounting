@@ -1,19 +1,54 @@
 <section class="page">
-    <h1>Customers</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Email</th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (customer of customers(); track customer.id) {
-            <tr>
-                <td>{{ customer.name }}</td>
-                <td>{{ customer.email }}</td>
-            </tr>
-            }
-        </tbody>
-    </table>
+    <mat-card class="customers-card">
+        <mat-card-header>
+            <mat-card-title>Customers</mat-card-title>
+            <mat-card-subtitle>Manage customer contacts</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+            <div class="form-grid">
+                <mat-form-field appearance="outline" class="field">
+                    <mat-label>Name</mat-label>
+                    <input matInput type="text" [value]="name()" (input)="name.set($any($event.target).value)" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="field">
+                    <mat-label>Email</mat-label>
+                    <input matInput type="email" [value]="email()" (input)="email.set($any($event.target).value)" />
+                </mat-form-field>
+
+                <div class="form-actions">
+                    <button mat-flat-button color="primary" type="button" (click)="addCustomer()">
+                        {{ editingCustomerId() !== null ? 'Save Customer' : 'Add Customer' }}
+                    </button>
+                    @if (editingCustomerId() !== null) {
+                    <button mat-stroked-button type="button" (click)="cancelEdit()">Cancel</button>
+                    }
+                </div>
+            </div>
+
+            <mat-divider></mat-divider>
+
+            <div class="customers-list" role="table" aria-label="Customers">
+                <div class="list-header" role="row">
+                    <span role="columnheader">Name</span>
+                    <span role="columnheader">Email</span>
+                    <span role="columnheader">Action</span>
+                </div>
+
+                @for (customer of customers(); track customer.id) {
+                <div class="list-row" role="row">
+                    <span role="cell">{{ customer.name }}</span>
+                    <span role="cell">{{ customer.email }}</span>
+                    <span class="row-actions" role="cell">
+                        <button mat-button type="button" (click)="startEdit(customer)">Edit</button>
+                        <button mat-button color="warn" type="button" (click)="deleteCustomer(customer.id)">
+                            Delete
+                        </button>
+                    </span>
+                </div>
+                }
+            </div>
+        </mat-card-content>
+    </mat-card>
 </section>

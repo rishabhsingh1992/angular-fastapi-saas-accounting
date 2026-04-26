@@ -9,13 +9,27 @@ import {
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatListModule } from '@angular/material/list';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { SidebarMenuItem, TenantBranding, UserRole } from '../../models';
 import { SidebarNavigationApiService } from '../../services/navigation/sidebar-navigation-api.service';
 import { NavigationService } from '../../services/navigation.service';
 
 @Component({
   selector: 'app-sidebar-navigation',
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [
+    CommonModule,
+    RouterLink,
+    RouterLinkActive,
+    MatCardModule,
+    MatDividerModule,
+    MatListModule,
+    MatButtonModule,
+    MatProgressBarModule,
+  ],
   templateUrl: './sidebar-navigation.component.html',
   styleUrl: './sidebar-navigation.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,

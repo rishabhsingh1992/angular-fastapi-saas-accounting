@@ -2,35 +2,42 @@
     padding: 24px;
 }
 
-.page h1 {
-    margin: 0 0 16px;
+.invoice-list-card {
+    max-width: 1100px;
+    margin: 0 auto;
 }
 
-table {
+.invoice-table {
     width: 100%;
-    border-collapse: collapse;
-    border: 1px solid #e2e8f0;
-    background: #fff;
 }
 
-th,
-td {
-    text-align: left;
-    padding: 10px 12px;
-    border-bottom: 1px solid #e2e8f0;
+.invoice-table .mat-mdc-header-row {
+    background: #f8fafc;
 }
 
-th {
-    font-weight: 600;
+.invoice-table .mat-mdc-header-cell {
     color: #475569;
+    font-weight: 700;
 }
 
-tbody tr:last-child td {
-    border-bottom: 0;
+.status-chip {
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 0.04em;
+    color: #854d0e;
+    background: #fef3c7;
 }
 
-a {
-    color: #2563eb;
-    text-decoration: none;
-    font-weight: 600;
+.status-chip.paid {
+    color: #166534;
+    background: #dcfce7;
+}
+
+@media (max-width: 900px) {
+    .invoice-table {
+        min-width: 760px;
+        display: block;
+        overflow-x: auto;
+    }
 }

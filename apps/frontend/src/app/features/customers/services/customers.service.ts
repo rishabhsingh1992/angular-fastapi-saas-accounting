@@ -21,6 +21,20 @@ export class CustomersService {
 
     readonly customers = this.customersState.asReadonly();
 
+    addCustomer(customer: Customer): void {
+        this.customersState.update(list => [...list, customer]);
+    }
+
+    updateCustomer(updatedCustomer: Customer): void {
+        this.customersState.update(list =>
+            list.map(customer => (customer.id === updatedCustomer.id ? updatedCustomer : customer))
+        );
+    }
+
+    deleteCustomer(id: number): void {
+        this.customersState.update(list => list.filter(customer => customer.id !== id));
+    }
+
     persistCustomers(): void {
         const serialized = JSON.stringify(this.customersState());
         if (serialized === this.lastPersisted) {

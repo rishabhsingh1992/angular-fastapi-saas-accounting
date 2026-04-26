@@ -3,37 +3,36 @@
 }
 
 .back-link {
-    display: inline-block;
+    display: inline-flex;
     margin-bottom: 16px;
-    color: #2563eb;
-    text-decoration: none;
 }
 
-.invoice-header {
+.invoice-detail-card,
+.invoice-not-found {
+    max-width: 1100px;
+    margin: 0 auto;
+}
+
+.invoice-meta {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 16px;
+    gap: 24px;
     margin-bottom: 16px;
 }
 
-.invoice-header h1 {
-    margin: 0 0 6px;
-}
-
-.invoice-header p {
-    margin: 0 0 4px;
+.invoice-meta p {
+    margin: 0;
     color: #475569;
 }
 
 .actions {
-    display: grid;
+    display: flex;
+    flex-wrap: wrap;
     gap: 8px;
-    justify-items: end;
+    align-items: center;
+    margin-bottom: 16px;
 }
 
 .badge {
-    display: inline-block;
     text-transform: uppercase;
     font-size: 0.75rem;
     font-weight: 700;
@@ -48,46 +47,21 @@
     background: #dcfce7;
 }
 
-button {
-    border: 1px solid #cbd5e1;
-    background: #0f172a;
-    color: #fff;
-    border-radius: 8px;
-    padding: 8px 12px;
-    cursor: pointer;
-}
-
-button.secondary {
-    background: #fff;
-    color: #0f172a;
-}
-
-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-table {
+.line-items-table {
     width: 100%;
-    border-collapse: collapse;
-    border: 1px solid #e2e8f0;
-    background: #fff;
 }
 
-th,
-td {
-    text-align: left;
-    padding: 10px 12px;
-    border-bottom: 1px solid #e2e8f0;
+.line-items-table .mat-mdc-header-row {
+    background: #f8fafc;
 }
 
-th {
+.line-items-table .mat-mdc-header-cell {
     font-weight: 600;
     color: #475569;
 }
 
-tbody tr:last-child td {
-    border-bottom: 0;
+mat-divider {
+    margin: 8px 0 16px;
 }
 
 .totals {
@@ -111,8 +85,19 @@ tbody tr:last-child td {
     position: fixed;
     right: 20px;
     bottom: 20px;
-    background: #0f172a;
-    color: #fff;
-    border-radius: 8px;
     padding: 10px 14px;
+    z-index: 1000;
+}
+
+@media (max-width: 900px) {
+    .invoice-meta {
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .line-items-table {
+        min-width: 680px;
+        display: block;
+        overflow-x: auto;
+    }
 }

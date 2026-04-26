@@ -1,62 +1,53 @@
-<aside
-  class="sidebar"
-  [style.background]="branding().surfaceColor"
-  [style.color]="branding().textColor"
-  [style.--brand-primary]="branding().primaryColor"
-  [style.--brand-accent]="branding().accentColor"
->
-  <div class="brand-header">
-    <img [src]="branding().logoUrl" [alt]="branding().tenantName + ' logo'" class="brand-logo" />
-    <p class="tenant-name">{{ branding().tenantName }}</p>
-  </div>
+<aside class="sidebar">
+  <mat-card class="sidebar-card">
+    <mat-card-header class="brand-header">
+      <img [src]="branding().logoUrl" [alt]="branding().tenantName + ' logo'" class="brand-logo" />
+      <div class="brand-text">
+        <mat-card-title>{{ branding().tenantName }}</mat-card-title>
+        <mat-card-subtitle>{{ currentUserRole() }}</mat-card-subtitle>
+      </div>
+    </mat-card-header>
 
-  @if (isLoading()) {
-    <div class="loading-shell">
-      <div class="skeleton-line"></div>
-      <div class="skeleton-line"></div>
-      <div class="skeleton-line short"></div>
-    </div>
-  } @else {
-    <nav aria-label="Main navigation" class="menu">
-      <ng-container
-        *ngTemplateOutlet="menuLevel; context: { $implicit: filteredMenu(), depth: 0 }"
-      ></ng-container>
-    </nav>
-  }
+    <mat-divider></mat-divider>
+
+    <mat-card-content>
+      @if (isLoading()) {
+      <div class="loading-shell" aria-live="polite">
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+        <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+      </div>
+      } @else {
+      <nav aria-label="Main navigation" class="menu">
+        <ng-container *ngTemplateOutlet="menuLevel; context: { $implicit: filteredMenu(), depth: 0 }"></ng-container>
+      </nav>
+      }
+    </mat-card-content>
+  </mat-card>
 </aside>
 
 <ng-template #menuLevel let-items let-depth="depth">
-  <ul class="menu-level" [style.padding-left.px]="depth * 14">
+  <mat-nav-list class="menu-level">
     @for (item of items; track item.id) {
-      <li>
-        @if (item.children?.length) {
-          <button
-            type="button"
-            class="menu-item group"
-            [class.active-parent]="hasAnyActiveChild(item)"
-            (click)="toggleGroup(item.id)"
-          >
-            <span class="menu-label">{{ item.label }}</span>
-            <span class="chevron" [class.open]="isExpanded(item.id)">▾</span>
-          </button>
+    <div class="menu-node" [class.child-level]="depth > 0">
+      @if (item.children?.length) {
+      <button mat-list-item type="button" class="menu-item group" [class.active-parent]="hasAnyActiveChild(item)"
+        (click)="toggleGroup(item.id)">
+        <span matListItemTitle class="menu-label">{{ item.label }}</span>
+        <span class="chevron" [class.open]="isExpanded(item.id)">▾</span>
+      </button>
 
-          @if (isExpanded(item.id) || hasAnyActiveChild(item)) {
-            <ng-container
-              *ngTemplateOutlet="menuLevel; context: { $implicit: item.children, depth: depth + 1 }"
-            ></ng-container>
-          }
-        } @else if (item.route) {
-          <a
-            [routerLink]="item.route"
-            routerLinkActive="active"
-            [routerLinkActiveOptions]="{ exact: false }"
-            class="menu-item link"
-            [class.active]="isActiveRoute(item.route)"
-          >
-            <span class="menu-label">{{ item.label }}</span>
-          </a>
-        }
-      </li>
+      @if (isExpanded(item.id) || hasAnyActiveChild(item)) {
+      <ng-container
+        *ngTemplateOutlet="menuLevel; context: { $implicit: item.children, depth: depth + 1 }"></ng-container>
+      }
+      } @else if (item.route) {
+      <a mat-list-item [routerLink]="item.route" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }"
+        class="menu-item link" [class.active]="isActiveRoute(item.route)">
+        <span matListItemTitle class="menu-label">{{ item.label }}</span>
+      </a>
+      }
+    </div>
     }
-  </ul>
+  </mat-nav-list>
 </ng-template>

@@ -2,12 +2,17 @@ import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject } from
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { filter, map } from 'rxjs';
+import { MatButtonModule } from '@angular/material/button';
+import { MatCardModule } from '@angular/material/card';
+import { MatChipsModule } from '@angular/material/chips';
+import { MatDividerModule } from '@angular/material/divider';
+import { MatTableModule } from '@angular/material/table';
 import { InvoiceService } from '../../services/invoice.service';
 import { InvoiceLineItem } from '../../models/invoice.models';
 
 @Component({
     selector: 'app-invoice-detail-page',
-    imports: [RouterLink],
+    imports: [RouterLink, MatCardModule, MatButtonModule, MatChipsModule, MatTableModule, MatDividerModule],
     templateUrl: './invoice-detail.page.html',
     styleUrl: './invoice-detail.page.scss',
     changeDetection: ChangeDetectionStrategy.OnPush,

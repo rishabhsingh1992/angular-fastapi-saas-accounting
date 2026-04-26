@@ -1,55 +1,74 @@
 <section class="page">
-    <a class="back-link" routerLink="/invoices">Back to invoices</a>
+    <a class="back-link" mat-button routerLink="/invoices">Back to invoices</a>
 
     @if (invoice(); as currentInvoice) {
-    <header class="invoice-header">
-        <div>
-            <h1>{{ currentInvoice.invoiceNumber }}</h1>
-            <p>{{ currentInvoice.clientName }} · {{ currentInvoice.clientEmail }}</p>
-            <p>Issue: {{ currentInvoice.issueDate }} | Due: {{ currentInvoice.dueDate }}</p>
-        </div>
+    <mat-card class="invoice-detail-card">
+        <mat-card-header>
+            <mat-card-title>{{ currentInvoice.invoiceNumber }}</mat-card-title>
+            <mat-card-subtitle>{{ currentInvoice.clientName }} · {{ currentInvoice.clientEmail }}</mat-card-subtitle>
+        </mat-card-header>
 
-        <div class="actions">
-            <span class="badge" [class.paid]="currentInvoice.status === 'paid'">{{ currentInvoice.status }}</span>
-            <button type="button" (click)="markAsPaid()" [disabled]="currentInvoice.status === 'paid'">
-                Mark as Paid
-            </button>
-            <button type="button" class="secondary" (click)="downloadPdf()">Download PDF</button>
-        </div>
-    </header>
+        <mat-card-content>
+            <section class="invoice-meta">
+                <p>Issue: {{ currentInvoice.issueDate }}</p>
+                <p>Due: {{ currentInvoice.dueDate }}</p>
+            </section>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Description</th>
-                <th>Qty</th>
-                <th>Unit Price</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (line of currentInvoice.lineItems; track line.id) {
-            <tr>
-                <td>{{ line.description }}</td>
-                <td>{{ line.qty }}</td>
-                <td>{{ formatMoney(line.unitPrice) }}</td>
-                <td>{{ formatMoney(calculateLineTotal(line)) }}</td>
-            </tr>
-            }
-        </tbody>
-    </table>
+            <section class="actions">
+                <mat-chip class="badge" [class.paid]="currentInvoice.status === 'paid'">{{ currentInvoice.status
+                    }}</mat-chip>
+                <button mat-flat-button color="primary" type="button" (click)="markAsPaid()"
+                    [disabled]="currentInvoice.status === 'paid'">
+                    Mark as Paid
+                </button>
+                <button mat-stroked-button type="button" (click)="downloadPdf()">Download PDF</button>
+            </section>
 
-    <section class="totals">
-        <p><span>Subtotal</span><strong>{{ formatMoney(summary().subtotal) }}</strong></p>
-        <p><span>Tax (18%)</span><strong>{{ formatMoney(summary().taxAmount) }}</strong></p>
-        <p class="grand-total"><span>Grand Total</span><strong>{{ formatMoney(summary().grandTotal) }}</strong></p>
-    </section>
+            <mat-divider></mat-divider>
+
+            <table mat-table [dataSource]="currentInvoice.lineItems" class="line-items-table">
+                <ng-container matColumnDef="description">
+                    <th mat-header-cell *matHeaderCellDef>Description</th>
+                    <td mat-cell *matCellDef="let line">{{ line.description }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="qty">
+                    <th mat-header-cell *matHeaderCellDef>Qty</th>
+                    <td mat-cell *matCellDef="let line">{{ line.qty }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="unitPrice">
+                    <th mat-header-cell *matHeaderCellDef>Unit Price</th>
+                    <td mat-cell *matCellDef="let line">{{ formatMoney(line.unitPrice) }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="total">
+                    <th mat-header-cell *matHeaderCellDef>Total</th>
+                    <td mat-cell *matCellDef="let line">{{ formatMoney(calculateLineTotal(line)) }}</td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="['description', 'qty', 'unitPrice', 'total']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['description', 'qty', 'unitPrice', 'total']"></tr>
+            </table>
+
+            <section class="totals">
+                <p><span>Subtotal</span><strong>{{ formatMoney(summary().subtotal) }}</strong></p>
+                <p><span>Tax (18%)</span><strong>{{ formatMoney(summary().taxAmount) }}</strong></p>
+                <p class="grand-total"><span>Grand Total</span><strong>{{ formatMoney(summary().grandTotal) }}</strong>
+                </p>
+            </section>
+        </mat-card-content>
+    </mat-card>
     } @else {
-    <h1>Invoice not found</h1>
-    <p>This invoice id does not exist in mock data.</p>
+    <mat-card class="invoice-not-found">
+        <mat-card-title>Invoice not found</mat-card-title>
+        <mat-card-content>
+            <p>This invoice id does not exist in mock data.</p>
+        </mat-card-content>
+    </mat-card>
     }
 
     @if (toastMessage()) {
-    <div class="toast">{{ toastMessage() }}</div>
+    <mat-card class="toast">{{ toastMessage() }}</mat-card>
     }
 </section>

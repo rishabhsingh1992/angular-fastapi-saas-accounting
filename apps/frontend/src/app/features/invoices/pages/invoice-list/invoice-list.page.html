@@ -1,27 +1,45 @@
 <section class="page">
-    <h1>Invoices</h1>
-    <table>
-        <thead>
-            <tr>
-                <th>Invoice</th>
-                <th>Client</th>
-                <th>Due Date</th>
-                <th>Status</th>
-                <th></th>
-            </tr>
-        </thead>
-        <tbody>
-            @for (invoice of invoices(); track invoice.id) {
-            <tr>
-                <td>{{ invoice.invoiceNumber }}</td>
-                <td>{{ invoice.clientName }}</td>
-                <td>{{ invoice.dueDate }}</td>
-                <td>{{ invoice.status }}</td>
-                <td>
-                    <a [routerLink]="['/invoices', invoice.id]">View</a>
-                </td>
-            </tr>
-            }
-        </tbody>
-    </table>
+    <mat-card class="invoice-list-card">
+        <mat-card-header>
+            <mat-card-title>Invoices</mat-card-title>
+            <mat-card-subtitle>Track invoice status and due dates</mat-card-subtitle>
+        </mat-card-header>
+
+        <mat-card-content>
+            <table mat-table [dataSource]="invoices()" class="invoice-table">
+                <ng-container matColumnDef="invoice">
+                    <th mat-header-cell *matHeaderCellDef>Invoice</th>
+                    <td mat-cell *matCellDef="let invoice">{{ invoice.invoiceNumber }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="client">
+                    <th mat-header-cell *matHeaderCellDef>Client</th>
+                    <td mat-cell *matCellDef="let invoice">{{ invoice.clientName }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="dueDate">
+                    <th mat-header-cell *matHeaderCellDef>Due Date</th>
+                    <td mat-cell *matCellDef="let invoice">{{ invoice.dueDate }}</td>
+                </ng-container>
+
+                <ng-container matColumnDef="status">
+                    <th mat-header-cell *matHeaderCellDef>Status</th>
+                    <td mat-cell *matCellDef="let invoice">
+                        <mat-chip class="status-chip" [class.paid]="invoice.status === 'paid'">{{ invoice.status
+                            }}</mat-chip>
+                    </td>
+                </ng-container>
+
+                <ng-container matColumnDef="action">
+                    <th mat-header-cell *matHeaderCellDef>Action</th>
+                    <td mat-cell *matCellDef="let invoice">
+                        <a mat-stroked-button [routerLink]="['/invoices', invoice.id]">View</a>
+                    </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="['invoice', 'client', 'dueDate', 'status', 'action']"></tr>
+                <tr mat-row *matRowDef="let row; columns: ['invoice', 'client', 'dueDate', 'status', 'action']"></tr>
+            </table>
+        </mat-card-content>
+    </mat-card>
 </section>
