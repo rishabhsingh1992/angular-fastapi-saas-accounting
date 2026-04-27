@@ -1,3 +1,5 @@
+from uuid import UUID
+
 from pydantic import BaseModel, Field
 
 
@@ -13,15 +15,15 @@ class UserCreate(BaseModel):
     password: str
     full_name: str
     role: str
-    tenant_id: int
+    tenant_id: str
 
 
 class UserRead(BaseModel):
-    id: int
+    id: UUID
     email: str
     full_name: str
     role: str
-    tenant_id: int
+    tenant_id: str
     is_active: bool
 
 
@@ -32,5 +34,5 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     email: str
-    tenant_id: int
+    tenant_id: str
     role: str
