@@ -1,3 +1,4 @@
+from datetime import datetime
 from uuid import UUID
 
 from pydantic import BaseModel, Field
@@ -36,3 +37,27 @@ class TokenData(BaseModel):
     email: str
     tenant_id: str
     role: str
+
+
+class CustomerBase(BaseModel):
+    name: str
+    email: str
+    phone: str | None = None
+    address: str | None = None
+
+
+class CustomerCreate(CustomerBase):
+    pass
+
+
+class CustomerUpdate(BaseModel):
+    name: str | None = None
+    email: str | None = None
+    phone: str | None = None
+    address: str | None = None
+
+
+class CustomerRead(CustomerBase):
+    id: UUID
+    tenant_id: str
+    created_at: datetime
