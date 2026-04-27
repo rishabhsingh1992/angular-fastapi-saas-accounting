@@ -4,7 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { CustomersService, Customer } from './services/customers.service';
+import { CustomersService, Customer } from './customers.service';
 
 @Component({
     selector: 'app-customers-page',
