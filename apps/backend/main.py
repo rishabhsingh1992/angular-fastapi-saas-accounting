@@ -20,9 +20,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(auth_router)
-app.include_router(customers_router)
-app.include_router(invoices_router)
+app.include_router(auth_router, prefix="/auth", tags=["auth"])
+app.include_router(customers_router, prefix="/customers", tags=["customers"])
+app.include_router(invoices_router, prefix="/invoices", tags=["invoices"])
 
 
 @app.get("/health", response_model=HealthCheckResponse, tags=["health"])
