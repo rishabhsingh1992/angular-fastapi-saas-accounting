@@ -8,7 +8,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from models.user import User
 from schemas import UserCreate, UserRead
-from security import hash_password
+from security import get_current_user, hash_password
 
 DATABASE_URL = os.getenv("DATABASE_URL", "postgresql+psycopg://postgres:postgres@localhost:5432/postgres")
 
@@ -51,4 +51,16 @@ def register(payload: UserCreate, db: Session = Depends(get_db)) -> UserRead:
         role=user.role,
         tenant_id=user.tenant_id,
         is_active=user.is_active,
+    )
+
+
+@router.get("/me", response_model=UserRead)
+def me(current_user: User = Depends(get_current_user)) -> UserRead:
+    return UserRead(
+        id=current_user.id,
+        email=current_user.email,
+        full_name=current_user.full_name,
+        role=current_user.role,
+        tenant_id=current_user.tenant_id,
+        is_active=current_user.is_active,
     )
