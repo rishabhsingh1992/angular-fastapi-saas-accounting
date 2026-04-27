@@ -1,6 +1,7 @@
 import { Injectable, inject } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, of, throwError, delay } from 'rxjs';
+import { Observable, map } from 'rxjs';
 
 export interface User {
     id: string;
@@ -11,8 +12,8 @@ export interface User {
     tenantName: string;
 }
 
-interface MockUser extends User {
-    password: string;
+interface Token {
+    access_token: string;
 }
 
 @Injectable({
@@ -21,41 +22,19 @@ interface MockUser extends User {
 export class AuthService {
     private readonly router = inject(Router);
 
-    private readonly mockUsers: MockUser[] = [
-        {
-            id: 'u1',
-            name: 'Rishabh Sharma',
-            email: 'rishabh@acmecorp.com',
-            password: 'password123',
-            role: 'owner',
-            tenantId: 't1',
-            tenantName: 'Acme Corp',
-        },
-        {
-            id: 'u2',
-            name: 'Priya Mehta',
-            email: 'priya@globex.com',
-            password: 'password123',
-            role: 'admin',
-            tenantId: 't2',
-            tenantName: 'Globex Ltd',
-        },
-    ];
+    private readonly http = inject(HttpClient);
 
     login(email: string, password: string): Observable<boolean> {
-        const match = this.mockUsers.find(
-            (u) => u.email === email && u.password === password
+        const formData = new FormData();
+        formData.append('username', email);
+        formData.append('password', password);
+
+        return this.http.post<Token>('/auth/login', formData).pipe(
+            map(({ access_token }) => {
+                localStorage.setItem('auth_token', access_token);
+                return true;
+            })
         );
-
-        if (!match) {
-            return throwError(() => new Error('Invalid credentials'));
-        }
-
-        const { password: _pw, ...user } = match;
-        localStorage.setItem('auth_token', 'mock-jwt-token');
-        localStorage.setItem('auth_user', JSON.stringify(user));
-
-        return of(true).pipe(delay(800));
     }
 
     logout(): void {
