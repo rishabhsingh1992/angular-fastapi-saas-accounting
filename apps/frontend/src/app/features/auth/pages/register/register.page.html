@@ -4,23 +4,46 @@
         <h1>Create your account</h1>
         <p class="subtitle">Set up your workspace and invite your finance team later.</p>
 
-        <form class="auth-form" novalidate>
+        @if (errorMessage()) {
+        <div class="error-banner" role="alert">
+            <span>{{ errorMessage() }}</span>
+        </div>
+        }
+
+        <form class="auth-form" [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
             <label>
                 <span>Full name</span>
-                <input type="text" placeholder="Your name" autocomplete="name" />
+                <input type="text" formControlName="full_name" placeholder="Your name" autocomplete="name" />
             </label>
 
             <label>
                 <span>Work email</span>
-                <input type="email" placeholder="name@company.com" autocomplete="email" />
+                <input type="email" formControlName="email" placeholder="name@company.com" autocomplete="email" />
             </label>
 
             <label>
                 <span>Password</span>
-                <input type="password" placeholder="Create password" autocomplete="new-password" />
+                <input type="password" formControlName="password" placeholder="Create password"
+                    autocomplete="new-password" />
             </label>
 
-            <button type="submit">Create account</button>
+            <label>
+                <span>Role</span>
+                <select formControlName="role" autocomplete="organization-title">
+                    <option value="admin">Admin</option>
+                    <option value="manager">Manager</option>
+                    <option value="analyst">Analyst</option>
+                    <option value="viewer">Viewer</option>
+                </select>
+            </label>
+
+            <button type="submit" [disabled]="isLoading()">
+                @if (isLoading()) {
+                Creating account…
+                } @else {
+                Create account
+                }
+            </button>
         </form>
 
         <p class="switch-link">

@@ -16,6 +16,13 @@ interface Token {
     access_token: string;
 }
 
+interface RegisterPayload {
+    email: string;
+    password: string;
+    full_name: string;
+    role: string;
+}
+
 @Injectable({
     providedIn: 'root',
 })
@@ -35,6 +42,13 @@ export class AuthService {
                 return true;
             })
         );
+    }
+
+    register(payload: RegisterPayload): Observable<User> {
+        return this.http.post<User>('/auth/register', {
+            ...payload,
+            tenant_id: 'acme-corp',
+        });
     }
 
     logout(): void {
