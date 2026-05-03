@@ -1,8 +1,9 @@
-import { Injectable, inject } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { Observable, of, throwError, delay } from 'rxjs';
+import { Observable, map, tap } from 'rxjs';
 
-export interface User {
+export interface UserRead {
     id: string;
     name: string;
     email: string;
@@ -11,8 +12,17 @@ export interface User {
     tenantName: string;
 }
 
-interface MockUser extends User {
+export type User = UserRead;
+
+interface Token {
+    access_token: string;
+}
+
+interface RegisterPayload {
+    email: string;
     password: string;
+    full_name: string;
+    role: string;
 }
 
 @Injectable({
@@ -21,41 +31,48 @@ interface MockUser extends User {
 export class AuthService {
     private readonly router = inject(Router);
 
-    private readonly mockUsers: MockUser[] = [
-        {
-            id: 'u1',
-            name: 'Rishabh Sharma',
-            email: 'rishabh@acmecorp.com',
-            password: 'password123',
-            role: 'owner',
-            tenantId: 't1',
-            tenantName: 'Acme Corp',
-        },
-        {
-            id: 'u2',
-            name: 'Priya Mehta',
-            email: 'priya@globex.com',
-            password: 'password123',
-            role: 'admin',
-            tenantId: 't2',
-            tenantName: 'Globex Ltd',
-        },
-    ];
+    private readonly http = inject(HttpClient);
+
+    private readonly currentUserState = signal<UserRead | null>(this.loadStoredCurrentUser());
+
+    constructor() {
+        if (this.getToken()) {
+            this.fetchCurrentUser().subscribe({
+                error: () => {
+                    this.currentUserState.set(null);
+                    localStorage.removeItem('auth_user');
+                },
+            });
+        }
+    }
 
     login(email: string, password: string): Observable<boolean> {
-        const match = this.mockUsers.find(
-            (u) => u.email === email && u.password === password
+        const formData = new FormData();
+        formData.append('username', email);
+        formData.append('password', password);
+
+        return this.http.post<Token>('/auth/login', formData).pipe(
+            map(({ access_token }) => {
+                localStorage.setItem('auth_token', access_token);
+                return true;
+            })
         );
+    }
 
-        if (!match) {
-            return throwError(() => new Error('Invalid credentials'));
-        }
+    register(payload: RegisterPayload): Observable<UserRead> {
+        return this.http.post<UserRead>('/auth/register', {
+            ...payload,
+            tenant_id: 'acme-corp',
+        });
+    }
 
-        const { password: _pw, ...user } = match;
-        localStorage.setItem('auth_token', 'mock-jwt-token');
-        localStorage.setItem('auth_user', JSON.stringify(user));
-
-        return of(true).pipe(delay(800));
+    fetchCurrentUser(): Observable<UserRead> {
+        return this.http.get<UserRead>('/auth/me').pipe(
+            tap((user) => {
+                this.currentUserState.set(user);
+                localStorage.setItem('auth_user', JSON.stringify(user));
+            })
+        );
     }
 
     logout(): void {
@@ -64,14 +81,8 @@ export class AuthService {
         this.router.navigate(['/login']);
     }
 
-    getCurrentUser(): User | null {
-        const raw = localStorage.getItem('auth_user');
-        if (!raw) return null;
-        try {
-            return JSON.parse(raw) as User;
-        } catch {
-            return null;
-        }
+    getCurrentUser(): UserRead | null {
+        return this.currentUserState();
     }
 
     isLoggedIn(): boolean {
@@ -80,5 +91,16 @@ export class AuthService {
 
     getToken(): string | null {
         return localStorage.getItem('auth_token');
+    }
+
+    private loadStoredCurrentUser(): UserRead | null {
+        const raw = localStorage.getItem('auth_user');
+        if (!raw) return null;
+
+        try {
+            return JSON.parse(raw) as UserRead;
+        } catch {
+            return null;
+        }
     }
 }
