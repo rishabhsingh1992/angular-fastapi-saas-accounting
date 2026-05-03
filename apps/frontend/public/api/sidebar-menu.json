@@ -3,30 +3,35 @@
     "id": "dashboard",
     "label": "Dashboard",
     "route": "/dashboard",
+    "icon": "dashboard",
     "allowedRoles": ["admin", "manager", "analyst", "viewer"]
   },
   {
     "id": "invoices",
     "label": "Invoices",
     "route": "/invoices",
+    "icon": "receipt_long",
     "allowedRoles": ["admin", "manager", "analyst"]
   },
   {
     "id": "expenses",
     "label": "Expenses",
     "route": "/expenses",
+    "icon": "credit_card",
     "allowedRoles": ["admin", "manager", "analyst"]
   },
   {
     "id": "reports",
     "label": "Reports",
     "route": "/reports",
+    "icon": "bar_chart",
     "allowedRoles": ["admin", "manager", "analyst", "viewer"]
   },
   {
     "id": "settings",
     "label": "Settings",
     "route": "/settings",
+    "icon": "settings",
     "allowedRoles": ["admin", "manager"]
   }
 ]

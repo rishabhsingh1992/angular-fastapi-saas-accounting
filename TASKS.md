@@ -10,12 +10,15 @@ apps/frontend/src/app/
 ├── app.scss
 ├── app.ts
 ├── core/
+│   ├── guards/
+│   │   └── auth.guard.ts
 │   ├── interceptors/
 │   │   └── auth.interceptor.ts
 │   ├── models/
 │   │   └── health.models.ts
 │   └── services/
-│       └── backend-health.service.ts
+│       ├── backend-health.service.ts
+│       └── theme.service.ts
 ├── features/
 │   ├── auth/
 │   │   ├── auth.routes.ts
@@ -132,3 +135,32 @@ apps/frontend/src/app/
 - [x] Pass: Interfaces/models moved to dedicated models folders
 - [x] Pass: App routes lazy-load feature route files
 - [x] Pass: Build verification complete (`ng build`)
+
+## Backend Architecture Status
+
+### Current Backend Structure
+
+```text
+apps/backend/
+├── app/
+│   ├── core/
+│   ├── db/
+│   ├── routes/
+│   └── services/
+├── config.py
+├── main.py
+└── schemas.py
+```
+
+### Backend Architecture Refactor Tasks
+
+- [ ] Move `config.py` to `app/core/config.py` and update references.
+- [ ] Move `schemas.py` to an appropriate folder (e.g., `app/schemas/` or `app/models/`).
+- [ ] Create API routers in `app/routes/` and move endpoints from `main.py` into them.
+- [ ] Initialize database connection and ORM setup in `app/db/`.
+- [ ] Move business logic to `app/services/` instead of keeping it in route handlers.
+- [ ] Configure dependency injection for database sessions.
+
+## Miscellaneous Tasks
+
+- [ ] Resolve duplicate `theme.service.ts` in frontend (found in both `core/services/` and `shared/services/`).

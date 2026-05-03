@@ -1,16 +1,14 @@
 <aside class="sidebar">
-  <mat-card class="sidebar-card">
-    <mat-card-header class="brand-header">
+  <div class="sidebar-inner">
+    <header class="brand-header">
       <img [src]="branding().logoUrl" [alt]="branding().tenantName + ' logo'" class="brand-logo" />
       <div class="brand-text">
-        <mat-card-title>{{ branding().tenantName }}</mat-card-title>
-        <mat-card-subtitle>{{ currentUserRole() }}</mat-card-subtitle>
+        <h2 class="brand-title">{{ branding().tenantName }}</h2>
+        <span class="brand-subtitle">{{ currentUserRole() }}</span>
       </div>
-    </mat-card-header>
+    </header>
 
-    <mat-divider></mat-divider>
-
-    <mat-card-content>
+    <div class="sidebar-content">
       @if (isLoading()) {
       <div class="loading-shell" aria-live="polite">
         <mat-progress-bar mode="indeterminate"></mat-progress-bar>
@@ -22,9 +20,7 @@
         <ng-container *ngTemplateOutlet="menuLevel; context: { $implicit: filteredMenu(), depth: 0 }"></ng-container>
       </nav>
       }
-    </mat-card-content>
-
-    <mat-divider></mat-divider>
+    </div>
 
     @if (currentUser(); as user) {
     <div class="user-footer">
@@ -38,31 +34,42 @@
       </button>
     </div>
     }
-  </mat-card>
+  </div>
 </aside>
 
 <ng-template #menuLevel let-items let-depth="depth">
-  <mat-nav-list class="menu-level">
+  <ul class="menu-list" [class.child-list]="depth > 0">
     @for (item of items; track item.id) {
-    <div class="menu-node" [class.child-level]="depth > 0">
+    <li class="menu-node">
       @if (item.children?.length) {
-      <button mat-list-item type="button" class="menu-item group" [class.active-parent]="hasAnyActiveChild(item)"
+      <button type="button" class="menu-item" [class.active-parent]="hasAnyActiveChild(item)"
         (click)="toggleGroup(item.id)">
-        <span matListItemTitle class="menu-label">{{ item.label }}</span>
-        <span class="chevron" [class.open]="isExpanded(item.id)">▾</span>
+        <div class="menu-item-content">
+          @if (item.icon) {
+            <mat-icon class="menu-icon">{{ item.icon }}</mat-icon>
+          }
+          <span class="menu-label">{{ item.label }}</span>
+        </div>
+        <mat-icon class="chevron" [class.open]="isExpanded(item.id) || hasAnyActiveChild(item)">expand_more</mat-icon>
       </button>
 
-      @if (isExpanded(item.id) || hasAnyActiveChild(item)) {
-      <ng-container
-        *ngTemplateOutlet="menuLevel; context: { $implicit: item.children, depth: depth + 1 }"></ng-container>
-      }
+      <div class="submenu-container" [class.expanded]="isExpanded(item.id) || hasAnyActiveChild(item)">
+        <div class="submenu-inner">
+          <ng-container *ngTemplateOutlet="menuLevel; context: { $implicit: item.children, depth: depth + 1 }"></ng-container>
+        </div>
+      </div>
       } @else if (item.route) {
-      <a mat-list-item [routerLink]="item.route" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }"
-        class="menu-item link" [class.active]="isActiveRoute(item.route)">
-        <span matListItemTitle class="menu-label">{{ item.label }}</span>
+      <a [routerLink]="item.route" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: false }"
+        class="menu-item link">
+        <div class="menu-item-content">
+          @if (item.icon) {
+            <mat-icon class="menu-icon">{{ item.icon }}</mat-icon>
+          }
+          <span class="menu-label">{{ item.label }}</span>
+        </div>
       </a>
       }
-    </div>
+    </li>
     }
-  </mat-nav-list>
+  </ul>
 </ng-template>
