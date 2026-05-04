@@ -9,9 +9,25 @@
   grid-template-columns: 280px 1fr;
   background: #f8fafc;
   
+  &.auth-mode {
+    display: block;
+    background: #f1f5f9;
+  }
+
   .dark-theme & {
     background: #0f172a;
+    &.auth-mode {
+      background: #0b0f1a;
+    }
   }
+}
+
+.auth-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
 }
 
 .workspace {

@@ -5,12 +5,15 @@ import {
   HostListener,
   inject,
   viewChild,
+  computed,
 } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
-import { RouterOutlet } from '@angular/router';
+import { RouterOutlet, Router, NavigationEnd } from '@angular/router';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { filter, map } from 'rxjs';
 import { SidebarNavigationComponent } from './shared/components/sidebar-navigation/sidebar-navigation.component';
 import { UserRole } from './shared/models';
 import { ThemeService } from './core/services/theme.service';
@@ -32,6 +35,7 @@ import { TenantContextService } from './shared/services/tenant-context.service';
 })
 export class App {
   private readonly tenantContext = inject(TenantContextService);
+  private readonly router = inject(Router);
   protected readonly themeService = inject(ThemeService);
 
   // Search input reference for keyboard shortcut
@@ -43,10 +47,24 @@ export class App {
   protected readonly tenants = this.tenantContext.tenants;
   protected readonly isDarkMode = this.themeService.isDarkMode();
 
+  // Track current URL to hide sidebar/navbar on auth pages
+  private readonly currentUrl = toSignal(
+    this.router.events.pipe(
+      filter((event) => event instanceof NavigationEnd),
+      map((event) => (event as NavigationEnd).urlAfterRedirects)
+    ),
+    { initialValue: this.router.url }
+  );
+
+  protected readonly isAuthPage = computed(() => {
+    const url = this.currentUrl();
+    return url.includes('/login') || url.includes('/register');
+  });
+
   @HostListener('window:keydown', ['$event'])
   handleKeyDown(event: KeyboardEvent) {
     // Cmd+K or Ctrl+K shortcut for search
-    if ((event.metaKey || event.ctrlKey) && event.key === 'k') {
+    if ((event.metaKey || event.ctrlKey) && event.key === 'k' && !this.isAuthPage()) {
       event.preventDefault();
       this.searchInput()?.nativeElement.focus();
     }

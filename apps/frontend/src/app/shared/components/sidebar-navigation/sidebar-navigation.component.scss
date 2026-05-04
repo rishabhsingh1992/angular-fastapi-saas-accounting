@@ -1,12 +1,14 @@
 :host {
   display: block;
-  height: 100%;
+  position: sticky;
+  top: 0;
+  height: 100vh;
 }
 
 .sidebar {
   width: 280px;
-  height: 100vh;
-  padding: 16px;
+  height: 100%;
+  padding: 0 16px 16px;
   background: #f8fafc;
   color: #0f172a;
   transition: all 0.3s ease;
@@ -321,6 +323,11 @@
 }
 
 @media (max-width: 900px) {
+  :host {
+    position: static;
+    height: auto;
+  }
+
   .sidebar {
     width: 100%;
     height: auto;

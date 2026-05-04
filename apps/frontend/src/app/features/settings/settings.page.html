@@ -1,168 +1,257 @@
 <section class="page">
     <mat-card class="settings-shell">
         <div class="settings-layout">
+            <!-- ── SIDEBAR ────────────────────────────────────────────────── -->
             <aside class="settings-sidebar" aria-label="Settings sections">
                 <h2>Settings</h2>
                 <mat-nav-list>
-                    <button mat-list-item type="button" [class.active]="selectedTab() === 'profile'"
+                    <button mat-list-item type="button" class="nav-item" [class.active]="selectedTab() === 'profile'"
                         (click)="selectTab('profile')">
-                        Profile
+                        <mat-icon>person_outline</mat-icon>
+                        <span>Profile</span>
                     </button>
-                    <button mat-list-item type="button" [class.active]="selectedTab() === 'company'"
+                    <button mat-list-item type="button" class="nav-item" [class.active]="selectedTab() === 'company'"
                         (click)="selectTab('company')">
-                        Company
+                        <mat-icon>business</mat-icon>
+                        <span>Company</span>
                     </button>
-                    <button mat-list-item type="button" [class.active]="selectedTab() === 'notifications'"
+                    <button mat-list-item type="button" class="nav-item" [class.active]="selectedTab() === 'appearance'"
+                        (click)="selectTab('appearance')">
+                        <mat-icon>palette</mat-icon>
+                        <span>Appearance</span>
+                    </button>
+                    <button mat-list-item type="button" class="nav-item" [class.active]="selectedTab() === 'notifications'"
                         (click)="selectTab('notifications')">
-                        Notifications
+                        <mat-icon>notifications_none</mat-icon>
+                        <span>Notifications</span>
                     </button>
-                    <button mat-list-item type="button" [class.active]="selectedTab() === 'danger'"
+                    <button mat-list-item type="button" class="nav-item" [class.active]="selectedTab() === 'security'"
+                        (click)="selectTab('security')">
+                        <mat-icon>lock_outline</mat-icon>
+                        <span>Security</span>
+                    </button>
+                    <button mat-list-item type="button" class="nav-item" [class.active]="selectedTab() === 'danger'"
                         (click)="selectTab('danger')">
-                        Danger Zone
+                        <mat-icon>delete_outline</mat-icon>
+                        <span>Danger Zone</span>
                     </button>
                 </mat-nav-list>
             </aside>
 
-            <div class="settings-content">
+            <!-- ── CONTENT ────────────────────────────────────────────────── -->
+            <main class="settings-content">
+                
+                <!-- Profile Tab -->
                 @if (selectedTab() === 'profile') {
-                <mat-card class="content-card">
-                    <mat-card-header>
-                        <div class="profile-avatar" mat-card-avatar>
-                            <mat-icon aria-hidden="true">person</mat-icon>
-                            <span>{{ initials }}</span>
+                <div class="content-card animate-tab">
+                    <header class="content-header">
+                        <h1>Profile Settings</h1>
+                        <p>Manage your personal information and how it's displayed.</p>
+                    </header>
+
+                    <div class="profile-section">
+                        <div class="avatar-wrapper">
+                            <div class="profile-avatar">
+                                <mat-icon>person</mat-icon>
+                                <span>{{ initials }}</span>
+                            </div>
+                            <button mat-icon-button class="edit-btn" aria-label="Change avatar">
+                                <mat-icon>photo_camera</mat-icon>
+                            </button>
                         </div>
-                        <mat-card-title>Profile Settings</mat-card-title>
-                        <mat-card-subtitle>Manage your personal account details.</mat-card-subtitle>
-                    </mat-card-header>
-
-                    <mat-card-content>
-                        <div class="form-grid">
-                            <mat-form-field appearance="outline" class="field">
-                                <mat-label>Full name</mat-label>
-                                <input matInput [value]="profile.name"
-                                    (input)="profile.name = $any($event.target).value" />
-                            </mat-form-field>
-
-                            <mat-form-field appearance="outline" class="field">
-                                <mat-label>Email</mat-label>
-                                <input matInput type="email" [value]="profile.email" [disabled]="true" />
-                            </mat-form-field>
-
-                            <mat-form-field appearance="outline" class="field">
-                                <mat-label>Phone</mat-label>
-                                <input matInput [value]="profile.phone"
-                                    (input)="profile.phone = $any($event.target).value" />
-                            </mat-form-field>
+                        <div class="profile-info">
+                            <h3>{{ profile.name }}</h3>
+                            <p>{{ profile.email }}</p>
                         </div>
-                    </mat-card-content>
+                    </div>
 
-                    <mat-card-actions align="end">
-                        <button mat-flat-button color="primary" type="button" (click)="saveProfile()">Save</button>
-                    </mat-card-actions>
-                </mat-card>
+                    <div class="form-grid two-column">
+                        <mat-form-field appearance="outline" class="field">
+                            <mat-label>Full name</mat-label>
+                            <input matInput [(ngModel)]="profile.name" />
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="field">
+                            <mat-label>Email Address</mat-label>
+                            <input matInput type="email" [value]="profile.email" [disabled]="true" />
+                            <mat-icon matSuffix>lock</mat-icon>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="field">
+                            <mat-label>Phone Number</mat-label>
+                            <input matInput [(ngModel)]="profile.phone" placeholder="+91 00000 00000" />
+                        </mat-form-field>
+                    </div>
+
+                    <div class="card-actions">
+                        <button mat-flat-button color="primary" [disabled]="isSaving()" (click)="saveSettings('Profile')">
+                            {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+                        </button>
+                    </div>
+                </div>
                 }
 
+                <!-- Company Tab -->
                 @if (selectedTab() === 'company') {
-                <mat-card class="content-card">
-                    <mat-card-header>
-                        <mat-card-title>Company / Tenant Settings</mat-card-title>
-                        <mat-card-subtitle>Update organization preferences and locale defaults.</mat-card-subtitle>
-                    </mat-card-header>
+                <div class="content-card animate-tab">
+                    <header class="content-header">
+                        <h1>Company Preferences</h1>
+                        <p>Configure your organization's identity and fiscal defaults.</p>
+                    </header>
 
-                    <mat-card-content>
-                        <div class="form-grid two-column">
-                            <mat-form-field appearance="outline" class="field">
-                                <mat-label>Company name</mat-label>
-                                <input matInput [value]="company.name"
-                                    (input)="company.name = $any($event.target).value" />
-                            </mat-form-field>
+                    <div class="form-grid two-column">
+                        <mat-form-field appearance="outline" class="field">
+                            <mat-label>Company Name</mat-label>
+                            <input matInput [(ngModel)]="company.name" />
+                        </mat-form-field>
 
-                            <mat-form-field appearance="outline" class="field">
-                                <mat-label>Company email</mat-label>
-                                <input matInput type="email" [value]="company.email"
-                                    (input)="company.email = $any($event.target).value" />
-                            </mat-form-field>
+                        <mat-form-field appearance="outline" class="field">
+                            <mat-label>Billing Email</mat-label>
+                            <input matInput type="email" [(ngModel)]="company.email" />
+                        </mat-form-field>
 
-                            <mat-form-field appearance="outline" class="field">
-                                <mat-label>Tax ID</mat-label>
-                                <input matInput [value]="company.taxId"
-                                    (input)="company.taxId = $any($event.target).value" />
-                            </mat-form-field>
+                        <mat-form-field appearance="outline" class="field">
+                            <mat-label>Tax ID / GSTIN</mat-label>
+                            <input matInput [(ngModel)]="company.taxId" />
+                        </mat-form-field>
 
-                            <mat-form-field appearance="outline" class="field">
-                                <mat-label>Currency</mat-label>
-                                <mat-select [value]="company.currency" (valueChange)="company.currency = $any($event)">
-                                    @for (currency of currencyOptions; track currency) {
-                                    <mat-option [value]="currency">{{ currency }}</mat-option>
-                                    }
-                                </mat-select>
-                            </mat-form-field>
+                        <mat-form-field appearance="outline" class="field">
+                            <mat-label>Default Currency</mat-label>
+                            <mat-select [(ngModel)]="company.currency">
+                                @for (currency of currencyOptions; track currency) {
+                                <mat-option [value]="currency">{{ currency }}</mat-option>
+                                }
+                            </mat-select>
+                        </mat-form-field>
 
-                            <mat-form-field appearance="outline" class="field span-two">
-                                <mat-label>Timezone</mat-label>
-                                <mat-select [value]="company.timezone" (valueChange)="company.timezone = $any($event)">
-                                    @for (timezone of timezoneOptions; track timezone) {
-                                    <mat-option [value]="timezone">{{ timezone }}</mat-option>
-                                    }
-                                </mat-select>
-                            </mat-form-field>
-                        </div>
-                    </mat-card-content>
+                        <mat-form-field appearance="outline" class="field span-two">
+                            <mat-label>Regional Timezone</mat-label>
+                            <mat-select [(ngModel)]="company.timezone">
+                                @for (timezone of timezoneOptions; track timezone) {
+                                <mat-option [value]="timezone">{{ timezone }}</mat-option>
+                                }
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
 
-                    <mat-card-actions align="end">
-                        <button mat-flat-button color="primary" type="button" (click)="saveCompany()">Save</button>
-                    </mat-card-actions>
-                </mat-card>
+                    <div class="card-actions">
+                        <button mat-flat-button color="primary" [disabled]="isSaving()" (click)="saveSettings('Company')">
+                            {{ isSaving() ? 'Saving...' : 'Save Changes' }}
+                        </button>
+                    </div>
+                </div>
                 }
 
-                @if (selectedTab() === 'notifications') {
-                <mat-card class="content-card">
-                    <mat-card-header>
-                        <mat-card-title>Notifications</mat-card-title>
-                        <mat-card-subtitle>Choose which updates should be delivered to your inbox.</mat-card-subtitle>
-                    </mat-card-header>
+                <!-- Appearance Tab -->
+                @if (selectedTab() === 'appearance') {
+                <div class="content-card animate-tab">
+                    <header class="content-header">
+                        <h1>Appearance</h1>
+                        <p>Customize the look and feel of your accounting dashboard.</p>
+                    </header>
 
-                    <mat-card-content>
-                        <div class="notification-list">
-                            @for (option of notificationOptions; track option.key) {
+                    <h3>Theme Mode</h3>
+                    <div class="appearance-options">
+                        <div class="theme-card" [class.active]="appearance.theme() === 'light'" (click)="appearance.theme.set('light')">
+                            <div class="theme-preview light"></div>
+                            <span>Light Mode</span>
+                        </div>
+                        <div class="theme-card" [class.active]="appearance.theme() === 'dark'" (click)="appearance.theme.set('dark')">
+                            <div class="theme-preview dark"></div>
+                            <span>Dark Mode</span>
+                        </div>
+                    </div>
+
+                    <div class="card-actions">
+                        <button mat-flat-button color="primary" [disabled]="isSaving()" (click)="saveSettings('Appearance')">
+                            {{ isSaving() ? 'Saving...' : 'Apply Theme' }}
+                        </button>
+                    </div>
+                </div>
+                }
+
+                <!-- Notifications Tab -->
+                @if (selectedTab() === 'notifications') {
+                <div class="content-card animate-tab">
+                    <header class="content-header">
+                        <h1>Email Notifications</h1>
+                        <p>Control which automated alerts you want to receive.</p>
+                    </header>
+
+                    <div class="notification-group">
+                        @for (option of notificationOptions; track option.key) {
+                        <div class="notification-item">
+                            <div class="item-info">
+                                <span>{{ option.label }}</span>
+                                <small>{{ option.description }}</small>
+                            </div>
                             <mat-slide-toggle [checked]="notifications[option.key]"
                                 (change)="onNotificationToggle(option.key, $event.checked)">
-                                {{ option.label }}
                             </mat-slide-toggle>
-                            }
                         </div>
-                    </mat-card-content>
+                        }
+                    </div>
 
-                    <mat-card-actions align="end">
-                        <button mat-flat-button color="primary" type="button" (click)="saveNotifications()">
-                            Save
+                    <div class="card-actions">
+                        <button mat-flat-button color="primary" [disabled]="isSaving()" (click)="saveSettings('Notifications')">
+                            {{ isSaving() ? 'Saving...' : 'Save Preferences' }}
                         </button>
-                    </mat-card-actions>
-                </mat-card>
+                    </div>
+                </div>
                 }
 
+                <!-- Security Tab -->
+                @if (selectedTab() === 'security') {
+                <div class="content-card animate-tab">
+                    <header class="content-header">
+                        <h1>Security</h1>
+                        <p>Ensure your account stays protected with advanced controls.</p>
+                    </header>
+
+                    <div class="notification-group">
+                        <div class="notification-item">
+                            <div class="item-info">
+                                <span>Two-Factor Authentication (2FA)</span>
+                                <small>Add an extra layer of security to your account.</small>
+                            </div>
+                            <mat-slide-toggle [checked]="security.twoFactorEnabled()" (change)="toggleTwoFactor()">
+                            </mat-slide-toggle>
+                        </div>
+                        
+                        <div class="notification-item">
+                            <div class="item-info">
+                                <span>Last Password Change</span>
+                                <small>Your password was last changed on {{ security.lastPasswordChange }}</small>
+                            </div>
+                            <button mat-stroked-button>Change Password</button>
+                        </div>
+                    </div>
+                </div>
+                }
+
+                <!-- Danger Zone Tab -->
                 @if (selectedTab() === 'danger') {
-                <mat-card class="content-card danger-card">
-                    <mat-card-header>
-                        <mat-card-title>Delete Account</mat-card-title>
-                        <mat-card-subtitle>Danger Zone</mat-card-subtitle>
-                    </mat-card-header>
+                <div class="content-card animate-tab">
+                    <header class="content-header">
+                        <h1>Account Deletion</h1>
+                        <p>Permanently remove your account and all associated data.</p>
+                    </header>
 
-                    <mat-card-content>
+                    <div class="danger-card">
                         <p>
-                            Deleting your account is permanent and cannot be undone. This action removes all
-                            tenant data, users, invoices, and financial records.
+                            Once you delete your account, there is no going back. Please be certain.
+                            All your invoices, client data, and reports will be wiped from our servers.
                         </p>
-                    </mat-card-content>
-
-                    <mat-card-actions align="end">
-                        <button mat-stroked-button color="warn" type="button" (click)="openDeleteConfirmation()">
-                            Delete Account
-                        </button>
-                    </mat-card-actions>
-                </mat-card>
+                        <div style="margin-top: 1.5rem">
+                            <button mat-flat-button color="warn" type="button" (click)="openDeleteConfirmation()">
+                                <mat-icon>delete_forever</mat-icon>
+                                Delete My Account
+                            </button>
+                        </div>
+                    </div>
+                </div>
                 }
-            </div>
+            </main>
         </div>
     </mat-card>
 </section>

@@ -1,0 +1,160 @@
+<section class="page">
+    <header class="page-header">
+        <div class="header-left">
+            <button mat-icon-button routerLink="/invoices" aria-label="Back to list">
+                <mat-icon>arrow_back</mat-icon>
+            </button>
+            <div>
+                <h1>Create New Invoice</h1>
+                <p>Fill in the details below to generate a professional invoice</p>
+            </div>
+        </div>
+        <div class="header-actions">
+            <button mat-stroked-button routerLink="/invoices">Cancel</button>
+            <button mat-flat-button color="primary" (click)="onSubmit()" [disabled]="invoiceForm.invalid">
+                <mat-icon>save</mat-icon>
+                Save Invoice
+            </button>
+        </div>
+    </header>
+
+    <div class="form-container">
+        <form [formGroup]="invoiceForm" class="invoice-form">
+            <div class="form-grid">
+                <!-- Main Info Card -->
+                <mat-card class="info-card">
+                    <mat-card-header>
+                        <mat-card-title>Invoice Details</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <div class="fields-row">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Invoice Number</mat-label>
+                                <input matInput formControlName="invoiceNumber" placeholder="e.g. INV-2026-001">
+                                @if (invoiceForm.get('invoiceNumber')?.hasError('required')) {
+                                    <mat-error>Required</mat-error>
+                                }
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline">
+                                <mat-label>Status</mat-label>
+                                <mat-select formControlName="status">
+                                    @for (opt of statusOptions; track opt.value) {
+                                        <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+                                    }
+                                </mat-select>
+                            </mat-form-field>
+                        </div>
+
+                        <div class="fields-row">
+                            <mat-form-field appearance="outline">
+                                <mat-label>Issue Date</mat-label>
+                                <input matInput [matDatepicker]="issuePicker" formControlName="issueDate">
+                                <mat-datepicker-toggle matSuffix [for]="issuePicker"></mat-datepicker-toggle>
+                                <mat-datepicker #issuePicker></mat-datepicker>
+                            </mat-form-field>
+
+                            <mat-form-field appearance="outline">
+                                <mat-label>Due Date</mat-label>
+                                <input matInput [matDatepicker]="duePicker" formControlName="dueDate">
+                                <mat-datepicker-toggle matSuffix [for]="duePicker"></mat-datepicker-toggle>
+                                <mat-datepicker #duePicker></mat-datepicker>
+                            </mat-form-field>
+                        </div>
+                    </mat-card-content>
+                </mat-card>
+
+                <!-- Client Info Card -->
+                <mat-card class="client-card">
+                    <mat-card-header>
+                        <mat-card-title>Client Information</mat-card-title>
+                    </mat-card-header>
+                    <mat-card-content>
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Client Name</mat-label>
+                            <input matInput formControlName="clientName" placeholder="Business or person name">
+                            <mat-icon matSuffix>business</mat-icon>
+                        </mat-form-field>
+
+                        <mat-form-field appearance="outline" class="full-width">
+                            <mat-label>Client Email</mat-label>
+                            <input matInput formControlName="clientEmail" placeholder="email@example.com">
+                            <mat-icon matSuffix>email</mat-icon>
+                            @if (invoiceForm.get('clientEmail')?.hasError('email')) {
+                                <mat-error>Invalid email</mat-error>
+                            }
+                        </mat-form-field>
+                    </mat-card-content>
+                </mat-card>
+            </div>
+
+            <!-- Line Items Card -->
+            <mat-card class="items-card">
+                <mat-card-header>
+                    <mat-card-title>Line Items</mat-card-title>
+                    <div class="spacer"></div>
+                    <button mat-button color="primary" type="button" (click)="addLineItem()">
+                        <mat-icon>add</mat-icon>
+                        Add Item
+                    </button>
+                </mat-card-header>
+                <mat-card-content>
+                    <div formArrayName="lineItems" class="line-items-list">
+                        <div class="items-header">
+                            <span class="col-desc">Description</span>
+                            <span class="col-qty">Qty</span>
+                            <span class="col-price">Unit Price</span>
+                            <span class="col-total">Total</span>
+                            <span class="col-actions"></span>
+                        </div>
+                        
+                        @for (item of lineItems.controls; track $index) {
+                            <div [formGroupName]="$index" class="line-item-row">
+                                <mat-form-field appearance="outline" class="col-desc">
+                                    <input matInput formControlName="description" placeholder="Item description">
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="col-qty">
+                                    <input matInput type="number" formControlName="qty">
+                                </mat-form-field>
+
+                                <mat-form-field appearance="outline" class="col-price">
+                                    <input matInput type="number" formControlName="unitPrice" prefix="$">
+                                    <span matPrefix>$&nbsp;</span>
+                                </mat-form-field>
+
+                                <div class="col-total text-right">
+                                    {{ formatMoney(item.get('qty')?.value * item.get('unitPrice')?.value) }}
+                                </div>
+
+                                <div class="col-actions">
+                                    <button mat-icon-button color="warn" type="button" (click)="removeLineItem($index)" [disabled]="lineItems.length === 1">
+                                        <mat-icon>delete_outline</mat-icon>
+                                    </button>
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <mat-divider></mat-divider>
+
+                    <!-- Summary Section -->
+                    <div class="invoice-summary">
+                        <div class="summary-row">
+                            <span>Subtotal</span>
+                            <span>{{ formatMoney(summary().subtotal) }}</span>
+                        </div>
+                        <div class="summary-row">
+                            <span>Tax (18%)</span>
+                            <span>{{ formatMoney(summary().taxAmount) }}</span>
+                        </div>
+                        <div class="summary-row grand-total">
+                            <span>Total Amount</span>
+                            <span>{{ formatMoney(summary().grandTotal) }}</span>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+        </form>
+    </div>
+</section>

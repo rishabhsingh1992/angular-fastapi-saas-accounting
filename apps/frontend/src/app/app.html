@@ -1,60 +1,66 @@
-<main class="app-shell">
-  <app-sidebar-navigation [tenantId]="tenantId()" [currentUserRole]="currentRole()" />
+<main class="app-shell" [class.auth-mode]="isAuthPage()">
+  @if (!isAuthPage()) {
+    <app-sidebar-navigation [tenantId]="tenantId()" [currentUserRole]="currentRole()" />
 
-  <section class="workspace">
-    <header class="workspace-toolbar">
-      <!-- Search Bar -->
-      <div class="search-container">
-        <mat-icon class="search-icon">search</mat-icon>
-        <input #searchInput type="text" placeholder="Search transactions, customers, or reports..." class="search-input" />
-        <span class="search-shortcut">⌘K</span>
-      </div>
-
-      <div class="toolbar-spacer"></div>
-
-      <!-- Quick Actions -->
-      <div class="toolbar-actions">
-        <!-- Tenant Switcher -->
-        <div class="custom-select-wrapper">
-          <mat-icon class="select-icon">business</mat-icon>
-          <select (change)="onTenantChange(($any($event.target)).value)" class="custom-select">
-            @for (tenant of tenants; track tenant) {
-            <option [value]="tenant" [selected]="tenant === tenantId()">{{ tenant | titlecase }} Workspace</option>
-            }
-          </select>
-          <mat-icon class="select-chevron">expand_more</mat-icon>
+    <section class="workspace">
+      <header class="workspace-toolbar">
+        <!-- Search Bar -->
+        <div class="search-container">
+          <mat-icon class="search-icon">search</mat-icon>
+          <input #searchInput type="text" placeholder="Search transactions, customers, or reports..." class="search-input" />
+          <span class="search-shortcut">⌘K</span>
         </div>
 
-        <!-- Role Switcher -->
-        <div class="custom-select-wrapper role-wrapper">
-          <mat-icon class="select-icon">badge</mat-icon>
-          <select (change)="onRoleChange(($any($event.target)).value)" class="custom-select">
-            @for (role of roles; track role) {
-            <option [value]="role" [selected]="role === currentRole()">{{ role | titlecase }}</option>
-            }
-          </select>
-          <mat-icon class="select-chevron">expand_more</mat-icon>
+        <div class="toolbar-spacer"></div>
+
+        <!-- Quick Actions -->
+        <div class="toolbar-actions">
+          <!-- Tenant Switcher -->
+          <div class="custom-select-wrapper">
+            <mat-icon class="select-icon">business</mat-icon>
+            <select (change)="onTenantChange(($any($event.target)).value)" class="custom-select">
+              @for (tenant of tenants; track tenant) {
+              <option [value]="tenant" [selected]="tenant === tenantId()">{{ tenant | titlecase }} Workspace</option>
+              }
+            </select>
+            <mat-icon class="select-chevron">expand_more</mat-icon>
+          </div>
+
+          <!-- Role Switcher -->
+          <div class="custom-select-wrapper role-wrapper">
+            <mat-icon class="select-icon">badge</mat-icon>
+            <select (change)="onRoleChange(($any($event.target)).value)" class="custom-select">
+              @for (role of roles; track role) {
+              <option [value]="role" [selected]="role === currentRole()">{{ role | titlecase }}</option>
+              }
+            </select>
+            <mat-icon class="select-chevron">expand_more</mat-icon>
+          </div>
+
+          <div class="toolbar-divider"></div>
+
+          <!-- Notifications -->
+          <button mat-icon-button type="button" class="action-btn" matTooltip="Notifications" aria-label="Notifications">
+            <mat-icon>notifications_none</mat-icon>
+            <span class="notification-badge"></span>
+          </button>
+
+          <!-- Theme Toggle -->
+          <button mat-icon-button type="button" class="action-btn theme-toggle"
+            [matTooltip]="isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'" (click)="toggleTheme()"
+            [attr.aria-label]="isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'">
+            <mat-icon>{{ isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+          </button>
         </div>
+      </header>
 
-        <div class="toolbar-divider"></div>
-
-        <!-- Notifications -->
-        <button mat-icon-button type="button" class="action-btn" matTooltip="Notifications" aria-label="Notifications">
-          <mat-icon>notifications_none</mat-icon>
-          <span class="notification-badge"></span>
-        </button>
-
-        <!-- Theme Toggle -->
-        <button mat-icon-button type="button" class="action-btn theme-toggle"
-          [matTooltip]="isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'" (click)="toggleTheme()"
-          [attr.aria-label]="isDarkMode() ? 'Switch to light mode' : 'Switch to dark mode'">
-          <mat-icon>{{ isDarkMode() ? 'light_mode' : 'dark_mode' }}</mat-icon>
-        </button>
-      </div>
-    </header>
-
-    <section class="workspace-content">
-      <router-outlet />
+      <section class="workspace-content">
+        <router-outlet />
+      </section>
     </section>
-  </section>
+  } @else {
+    <div class="auth-container">
+      <router-outlet />
+    </div>
+  }
 </main>

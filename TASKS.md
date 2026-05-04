@@ -164,3 +164,68 @@ apps/backend/
 ## Miscellaneous Tasks
 
 - [ ] Resolve duplicate `theme.service.ts` in frontend (found in both `core/services/` and `shared/services/`).
+
+---
+
+## Frontend MVP Tasks
+
+Priority order: auth guard → invoice API → settings API → expense entry → empty/error/loading states everywhere.
+
+### Stub Pages (Routes Exist, No Content)
+
+- [ ] **Expenses** — expense entry form, categorization, receipt upload, reimbursement workflow
+- [ ] **Billing** — subscription plan display, payment method management, invoice history for the SaaS itself
+- [ ] **Overview** — tenant-level KPI summary (admin-only cross-tenant view)
+
+### Missing Core Features
+
+- [ ] **Invoice creation** — full form with line items, tax calculation, and client selector (currently shows "Coming soon" snackbar)
+- [ ] **Invoice PDF generation** — wire up the existing button to real PDF export
+- [ ] **Expense tracking** — categories, amounts, date, receipt attachments, approval workflow
+- [ ] **Customer detail page** — detail/history view with invoice history per customer
+
+### Functional Gaps in Existing Pages
+
+- [ ] **Auth guard** — currently always returns `true`; implement real route protection
+- [ ] **Reports date picker** — UI exists but does not filter data; connect to API with date range params
+- [ ] **Settings** — UI complete but no API calls; wire up GET/PUT so changes persist
+- [ ] **Invoice service** — replace mock signals with real GET/POST/PUT/DELETE `/invoices` API calls
+- [ ] **Dashboard** — replace fully hardcoded data with `/dashboard/summary` API endpoint
+- [ ] **Customers** — add loading/error states and pagination
+- [ ] **Role switching** — currently cosmetic; should restrict access and scope data
+
+### Backend Integration (Frontend Ready, API Missing)
+
+- [ ] **Invoice CRUD** — implement GET/POST/PUT/DELETE `/invoices` endpoints
+- [ ] **Dashboard summary** — implement `/dashboard/summary` endpoint
+- [ ] **Settings persistence** — implement GET/PUT `/users/me` and GET/PUT `/companies/{id}`
+- [ ] **Reports with real data** — implement `/reports/sales` and `/reports/finance` with date range params
+
+### UX / Product Improvements
+
+- [ ] **Empty states** — illustrated empty states for all list pages when data is absent
+- [ ] **Loading skeletons** — all data-fetching pages need skeleton loaders (only sidebar has one currently)
+- [ ] **Error handling** — error states for failed API calls on all pages (only login/health handled now)
+- [ ] **Notifications panel** — wire up the bell icon/badge to a real notification panel
+- [ ] **Invoice status workflow** — draft → sent → paid transitions with overdue detection
+- [ ] **Pagination** — customers page has none; invoices use `mat-paginator` on mock data only
+- [ ] **Search** — global search bar in header triggers keyboard shortcut but does nothing
+- [ ] **Customers in sidebar** — add customers route to `sidebar-menu.json` (route works, link missing)
+
+### Architecture / Infrastructure
+
+- [ ] **Multi-tenancy data scoping** — tenant switcher works visually but data is never scoped to tenant
+- [ ] **Auth token refresh** — no refresh token logic; expired tokens silently fail
+- [ ] **Form validation** — only auth forms validate; settings and invoice forms have no error display
+- [ ] **Currency consistency** — reports use INR (₹), invoice service uses USD ($); standardize
+
+### Nice-to-Haves (Post-MVP)
+
+- [ ] Audit log / activity feed
+- [ ] Email notifications (invoice sent, payment received)
+- [ ] CSV/Excel export for reports
+- [ ] Recurring invoices
+- [ ] Multi-currency support
+- [ ] Tax configuration (GST/VAT rates per region)
+- [ ] User management (invite team members, assign roles)
+- [ ] Mobile-responsive sidebar (currently hidden at ≤900px)

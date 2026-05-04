@@ -1,4 +1,273 @@
 <section class="page">
-    <h1>Billing</h1>
-    <p>Invoices, payment methods, and subscription details.</p>
+    <mat-card class="billing-shell">
+        <div class="billing-layout">
+
+            <!-- ── SIDEBAR ───────────────────────────────────────── -->
+            <aside class="billing-sidebar" aria-label="Billing sections">
+                <h2>Billing</h2>
+                <mat-nav-list>
+                    <button mat-list-item type="button"
+                        [class.active]="selectedTab() === 'subscription'"
+                        (click)="selectTab('subscription')">
+                        Subscription
+                    </button>
+                    <button mat-list-item type="button"
+                        [class.active]="selectedTab() === 'payment-methods'"
+                        (click)="selectTab('payment-methods')">
+                        Payment Methods
+                    </button>
+                    <button mat-list-item type="button"
+                        [class.active]="selectedTab() === 'invoice-history'"
+                        (click)="selectTab('invoice-history')">
+                        Invoice History
+                    </button>
+                </mat-nav-list>
+            </aside>
+
+            <!-- ── CONTENT ───────────────────────────────────────── -->
+            <div class="billing-content">
+
+                <!-- ── SUBSCRIPTION ─────────────────────────────── -->
+                @if (selectedTab() === 'subscription') {
+
+                    <!-- Current plan banner -->
+                    <mat-card class="content-card current-plan-card">
+                        <mat-card-content>
+                            <div class="current-plan-row">
+                                <div>
+                                    <div class="plan-badge">Current Plan</div>
+                                    <div class="current-plan-name">Pro</div>
+                                    <div class="current-plan-sub">₹999 / month · Next billing on Jun 1, 2026</div>
+                                </div>
+                                <button mat-stroked-button type="button" (click)="selectPlan(plans[2])">
+                                    Upgrade to Business
+                                </button>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+
+                    <!-- Usage -->
+                    <mat-card class="content-card">
+                        <mat-card-header>
+                            <mat-card-title>Usage This Month</mat-card-title>
+                        </mat-card-header>
+                        <mat-card-content>
+                            <div class="usage-list">
+                                <div class="usage-item">
+                                    <div class="usage-header">
+                                        <span>Invoices</span>
+                                        <span>120 / 500</span>
+                                    </div>
+                                    <div class="usage-bar-track">
+                                        <div class="usage-bar-fill" [style.width.%]="usagePercent(120, 500)"></div>
+                                    </div>
+                                </div>
+                                <div class="usage-item">
+                                    <div class="usage-header">
+                                        <span>Team Members</span>
+                                        <span>3 / 10</span>
+                                    </div>
+                                    <div class="usage-bar-track">
+                                        <div class="usage-bar-fill" [style.width.%]="usagePercent(3, 10)"></div>
+                                    </div>
+                                </div>
+                                <div class="usage-item">
+                                    <div class="usage-header">
+                                        <span>Storage</span>
+                                        <span>2.3 GB / 10 GB</span>
+                                    </div>
+                                    <div class="usage-bar-track">
+                                        <div class="usage-bar-fill" [style.width.%]="usagePercent(23, 100)"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+
+                    <!-- Plan comparison -->
+                    <div class="plans-grid">
+                        @for (plan of plans; track plan.id) {
+                            <mat-card class="plan-card"
+                                [class.plan-current]="plan.id === currentPlanId"
+                                [class.plan-popular]="plan.popular">
+                                <mat-card-content>
+                                    @if (plan.popular) {
+                                        <div class="popular-badge">Most Popular</div>
+                                    }
+                                    <div class="plan-name">{{ plan.name }}</div>
+                                    <div class="plan-price">
+                                        @if (plan.price === 0) {
+                                            <span class="price-amount">Free</span>
+                                        } @else {
+                                            <span class="price-amount">₹{{ plan.price.toLocaleString('en-IN') }}</span>
+                                            <span class="price-period">/mo</span>
+                                        }
+                                    </div>
+                                    <div class="plan-desc">{{ plan.description }}</div>
+                                    <mat-divider></mat-divider>
+                                    <ul class="plan-features">
+                                        @for (feature of plan.features; track feature) {
+                                            <li>
+                                                <mat-icon class="feature-check" aria-hidden="true">check</mat-icon>
+                                                {{ feature }}
+                                            </li>
+                                        }
+                                    </ul>
+                                    @if (plan.id === currentPlanId) {
+                                        <button mat-flat-button disabled class="plan-cta" type="button">
+                                            Current Plan
+                                        </button>
+                                    } @else {
+                                        <button mat-flat-button color="primary" class="plan-cta" type="button"
+                                            (click)="selectPlan(plan)">
+                                            {{ plan.cta }}
+                                        </button>
+                                    }
+                                </mat-card-content>
+                            </mat-card>
+                        }
+                    </div>
+                }
+
+                <!-- ── PAYMENT METHODS ───────────────────────────── -->
+                @if (selectedTab() === 'payment-methods') {
+                    <mat-card class="content-card">
+                        <mat-card-header>
+                            <mat-card-title>Payment Methods</mat-card-title>
+                            <mat-card-subtitle>Cards used for subscription billing.</mat-card-subtitle>
+                        </mat-card-header>
+                        <mat-card-content>
+
+                            <div class="card-list">
+                                @for (method of paymentMethods(); track method.id) {
+                                    <div class="payment-card">
+                                        <div class="card-icon-wrap" aria-hidden="true">
+                                            <mat-icon>credit_card</mat-icon>
+                                        </div>
+                                        <div class="card-info">
+                                            <div class="card-title">
+                                                {{ method.brand }} •••• {{ method.last4 }}
+                                                @if (method.isDefault) {
+                                                    <mat-chip class="default-chip">Default</mat-chip>
+                                                }
+                                            </div>
+                                            <div class="card-sub">Expires {{ method.expiry }}</div>
+                                        </div>
+                                        <div class="card-actions">
+                                            @if (!method.isDefault) {
+                                                <button mat-button type="button" (click)="setDefault(method.id)">
+                                                    Set Default
+                                                </button>
+                                            }
+                                            <button mat-button color="warn" type="button"
+                                                [disabled]="method.isDefault"
+                                                [matTooltip]="method.isDefault ? 'Cannot remove the default card' : ''"
+                                                (click)="removeCard(method.id)">
+                                                Remove
+                                            </button>
+                                        </div>
+                                    </div>
+                                }
+                                @if (paymentMethods().length === 0) {
+                                    <div class="no-cards">No payment methods on file.</div>
+                                }
+                            </div>
+
+                            <mat-divider></mat-divider>
+
+                            @if (!showAddCard()) {
+                                <div class="add-card-trigger">
+                                    <button mat-stroked-button type="button" (click)="showAddCard.set(true)">
+                                        <mat-icon>add</mat-icon>
+                                        Add Payment Method
+                                    </button>
+                                </div>
+                            } @else {
+                                <div class="add-card-form">
+                                    <h3>New Card</h3>
+                                    <div class="card-form-grid">
+                                        <mat-form-field appearance="outline" class="span-two">
+                                            <mat-label>Cardholder Name</mat-label>
+                                            <input matInput [value]="cardName()"
+                                                (input)="cardName.set($any($event.target).value)"
+                                                placeholder="Name as on card" />
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline" class="span-two">
+                                            <mat-label>Card Number</mat-label>
+                                            <input matInput [value]="cardNumber()"
+                                                (input)="cardNumber.set($any($event.target).value)"
+                                                placeholder="•••• •••• •••• ••••" maxlength="19" />
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>Expiry (MM/YY)</mat-label>
+                                            <input matInput [value]="cardExpiry()"
+                                                (input)="cardExpiry.set($any($event.target).value)"
+                                                placeholder="MM/YY" maxlength="5" />
+                                        </mat-form-field>
+                                        <mat-form-field appearance="outline">
+                                            <mat-label>CVV</mat-label>
+                                            <input matInput type="password" [value]="cardCvv()"
+                                                (input)="cardCvv.set($any($event.target).value)"
+                                                placeholder="•••" maxlength="4" />
+                                        </mat-form-field>
+                                    </div>
+                                    <div class="card-form-actions">
+                                        <button mat-flat-button color="primary" type="button" (click)="addCard()">
+                                            Add Card
+                                        </button>
+                                        <button mat-button type="button" (click)="cancelAddCard()">Cancel</button>
+                                    </div>
+                                </div>
+                            }
+
+                        </mat-card-content>
+                    </mat-card>
+                }
+
+                <!-- ── INVOICE HISTORY ───────────────────────────── -->
+                @if (selectedTab() === 'invoice-history') {
+                    <mat-card class="content-card">
+                        <mat-card-header>
+                            <mat-card-title>Invoice History</mat-card-title>
+                            <mat-card-subtitle>Past billing invoices for your subscription.</mat-card-subtitle>
+                        </mat-card-header>
+                        <mat-card-content>
+                            <div class="invoice-list" role="table" aria-label="Billing invoices">
+                                <div class="invoice-list-header" role="row">
+                                    <span role="columnheader">Invoice</span>
+                                    <span role="columnheader">Date</span>
+                                    <span role="columnheader">Plan</span>
+                                    <span role="columnheader" class="align-right">Amount</span>
+                                    <span role="columnheader">Status</span>
+                                    <span role="columnheader"></span>
+                                </div>
+                                @for (invoice of invoices; track invoice.id) {
+                                    <div class="invoice-list-row" role="row">
+                                        <span role="cell" class="invoice-id">{{ invoice.id }}</span>
+                                        <span role="cell">{{ formatDate(invoice.date) }}</span>
+                                        <span role="cell">{{ invoice.plan }}</span>
+                                        <span role="cell" class="align-right amount-cell">
+                                            {{ invoice.amount === 0 ? 'Free' : '₹' + invoice.amount.toLocaleString('en-IN') }}
+                                        </span>
+                                        <span role="cell">
+                                            <mat-chip [class]="statusClass(invoice.status)">{{ invoice.status }}</mat-chip>
+                                        </span>
+                                        <span role="cell" class="align-right">
+                                            <button mat-icon-button type="button"
+                                                matTooltip="Download PDF"
+                                                aria-label="Download invoice"
+                                                (click)="downloadInvoice(invoice)">
+                                                <mat-icon>download</mat-icon>
+                                            </button>
+                                        </span>
+                                    </div>
+                                }
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+                }
+
+            </div>
+        </div>
+    </mat-card>
 </section>

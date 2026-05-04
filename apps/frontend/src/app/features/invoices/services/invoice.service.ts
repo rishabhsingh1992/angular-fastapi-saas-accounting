@@ -2,32 +2,14 @@ import { DestroyRef, Injectable, computed, signal } from '@angular/core';
 import { Invoice, InvoiceLineItem, InvoiceStatus, InvoiceSummary, INVOICE_TAX_RATE } from '../models/invoice.models';
 
 const MOCK_INVOICES: Invoice[] = [
-    {
-        id: 101,
-        invoiceNumber: 'INV-2026-001',
-        clientName: 'ABC Corp',
-        clientEmail: 'billing@abc.test.com',
-        issueDate: '2026-04-01',
-        dueDate: '2026-04-30',
-        status: 'sent',
-        lineItems: [
-            { id: '101-1', description: 'Accounting Subscription', qty: 1, unitPrice: 4500 },
-            { id: '101-2', description: 'Bookkeeping Hours', qty: 12, unitPrice: 120 },
-        ],
-    },
-    {
-        id: 102,
-        invoiceNumber: 'INV-2026-002',
-        clientName: 'XYZ Ltd',
-        clientEmail: 'accounts@xyz.test.com',
-        issueDate: '2026-04-10',
-        dueDate: '2026-05-10',
-        status: 'draft',
-        lineItems: [
-            { id: '102-1', description: 'Financial Reporting', qty: 1, unitPrice: 2200 },
-            { id: '102-2', description: 'Advisory Session', qty: 3, unitPrice: 300 },
-        ],
-    },
+    { id: 101, invoiceNumber: 'INV-2026-001', clientName: 'Globex Ltd', clientEmail: 'billing@globex.com', issueDate: '2026-04-08', dueDate: '2026-04-22', status: 'paid', lineItems: [{ id: '1', description: 'Consulting', qty: 10, unitPrice: 1250 }] },
+    { id: 102, invoiceNumber: 'INV-2026-002', clientName: 'Initech', clientEmail: 'accounts@initech.com', issueDate: '2026-03-27', dueDate: '2026-04-10', status: 'overdue', lineItems: [{ id: '1', description: 'Software Development', qty: 1, unitPrice: 8200 }] },
+    { id: 103, invoiceNumber: 'INV-2026-003', clientName: 'Umbrella Corp', clientEmail: 'finance@umbrella.com', issueDate: '2026-04-15', dueDate: '2026-04-30', status: 'sent', lineItems: [{ id: '1', description: 'Security Audit', qty: 1, unitPrice: 15000 }] },
+    { id: 104, invoiceNumber: 'INV-2026-004', clientName: 'Stark Industries', clientEmail: 'ap@stark.com', issueDate: '2026-04-04', dueDate: '2026-04-18', status: 'paid', lineItems: [{ id: '1', description: 'Arc Reactor Maintenance', qty: 1, unitPrice: 6800 }] },
+    { id: 105, invoiceNumber: 'INV-2026-005', clientName: 'Wayne Enterprises', clientEmail: 'billing@wayne.com', issueDate: '2026-04-21', dueDate: '2026-05-05', status: 'draft', lineItems: [{ id: '1', description: 'Gadget R&D', qty: 1, unitPrice: 9400 }] },
+    { id: 106, invoiceNumber: 'INV-2026-006', clientName: 'Oscorp', clientEmail: 'finance@oscorp.com', issueDate: '2026-04-01', dueDate: '2026-04-15', status: 'paid', lineItems: [{ id: '1', description: 'Bio-chemical Research', qty: 1, unitPrice: 22000 }] },
+    { id: 107, invoiceNumber: 'INV-2026-007', clientName: 'Cyberdyne Systems', clientEmail: 'ap@cyberdyne.com', issueDate: '2026-03-22', dueDate: '2026-04-05', status: 'overdue', lineItems: [{ id: '1', description: 'AI Development', qty: 1, unitPrice: 17500 }] },
+    { id: 108, invoiceNumber: 'INV-2026-008', clientName: 'Massive Dynamic', issueDate: '2026-04-17', dueDate: '2026-05-01', status: 'sent', clientEmail: 'billing@massive.com', lineItems: [{ id: '1', description: 'Fringe Science', qty: 1, unitPrice: 11200 }] },
 ];
 
 @Injectable({
@@ -51,8 +33,8 @@ export class InvoiceService {
         return this.invoicesState().find((invoice) => invoice.id === id);
     }
 
-    getInvoiceSummary(invoice: Invoice | undefined): InvoiceSummary {
-        if (!invoice) {
+    getInvoiceSummary(invoice: Invoice | undefined | Partial<Invoice>): InvoiceSummary {
+        if (!invoice || !invoice.lineItems) {
             return {
                 subtotal: 0,
                 taxAmount: 0,
@@ -80,6 +62,17 @@ export class InvoiceService {
 
     markAsPaid(id: number): void {
         this.setStatus(id, 'paid');
+    }
+
+    createInvoice(invoice: Omit<Invoice, 'id'>): Invoice {
+        const newId = Math.max(0, ...this.invoicesState().map(i => i.id)) + 1;
+        const newInvoice: Invoice = { ...invoice, id: newId };
+        this.invoicesState.update(list => [...list, newInvoice]);
+        return newInvoice;
+    }
+
+    deleteInvoice(id: number): void {
+        this.invoicesState.update(list => list.filter(i => i.id !== id));
     }
 
     triggerPdfToast(): void {

@@ -1,3 +1,526 @@
 .page {
     padding: 24px;
 }
+
+.billing-shell {
+    max-width: 1180px;
+    margin: 0 auto;
+    border-radius: 16px;
+}
+
+.billing-layout {
+    display: grid;
+    grid-template-columns: 250px minmax(0, 1fr);
+}
+
+// ── SIDEBAR ─────────────────────────────────────────────────────
+.billing-sidebar {
+    border-right: 1px solid #e2e8f0;
+    padding: 8px 8px 8px 0;
+
+    .dark-theme & {
+        border-right-color: #334155;
+    }
+}
+
+.billing-sidebar h2 {
+    margin: 8px 16px 10px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #334155;
+
+    .dark-theme & {
+        color: #e2e8f0;
+    }
+}
+
+.billing-sidebar mat-nav-list {
+    padding-top: 0;
+}
+
+.billing-sidebar [mat-list-item] {
+    border-radius: 10px;
+    margin: 2px 8px;
+}
+
+.billing-sidebar [mat-list-item].active {
+    background: #e8f1ff;
+    color: #0b57d0;
+    font-weight: 600;
+
+    .dark-theme & {
+        background: #1e3a8a;
+        color: #bfdbfe;
+    }
+}
+
+// ── CONTENT ─────────────────────────────────────────────────────
+.billing-content {
+    min-width: 0;
+    padding: 16px;
+    display: grid;
+    gap: 16px;
+    align-content: start;
+}
+
+.content-card {
+    border-radius: 14px;
+}
+
+// ── CURRENT PLAN BANNER ─────────────────────────────────────────
+.current-plan-card {
+    background: linear-gradient(135deg, #1d4ed8 0%, #0284c7 100%);
+    color: #fff;
+}
+
+.current-plan-card mat-card-content {
+    color: inherit;
+}
+
+.current-plan-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.plan-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.8;
+    margin-bottom: 4px;
+}
+
+.current-plan-name {
+    font-size: 1.7rem;
+    font-weight: 700;
+    line-height: 1.1;
+}
+
+.current-plan-sub {
+    font-size: 0.85rem;
+    opacity: 0.85;
+    margin-top: 4px;
+}
+
+.current-plan-card button {
+    border-color: rgba(255, 255, 255, 0.55) !important;
+    color: #fff !important;
+}
+
+// ── USAGE BARS ──────────────────────────────────────────────────
+.usage-list {
+    display: grid;
+    gap: 18px;
+    margin-top: 8px;
+}
+
+.usage-item {
+    display: grid;
+    gap: 8px;
+}
+
+.usage-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--mat-sys-on-surface-variant);
+}
+
+.usage-bar-track {
+    height: 6px;
+    border-radius: 999px;
+    background: #e2e8f0;
+    overflow: hidden;
+
+    .dark-theme & {
+        background: #334155;
+    }
+}
+
+.usage-bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: linear-gradient(90deg, #1d4ed8, #0284c7);
+}
+
+// ── PLAN CARDS ──────────────────────────────────────────────────
+.plans-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px;
+}
+
+.plan-card {
+    border-radius: 14px;
+    border: 2px solid transparent;
+    position: relative;
+    transition: box-shadow 0.2s;
+}
+
+.plan-card:hover {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+}
+
+.plan-card mat-card-content {
+    padding: 20px;
+    display: grid;
+    gap: 12px;
+}
+
+.plan-current {
+    border-color: #1d4ed8;
+
+    .dark-theme & {
+        border-color: #3b82f6;
+    }
+}
+
+.plan-popular {
+    box-shadow: 0 2px 12px rgba(29, 78, 216, 0.18);
+}
+
+.popular-badge {
+    position: absolute;
+    top: -11px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1d4ed8;
+    color: #fff;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 3px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+}
+
+.plan-name {
+    font-size: 1rem;
+    font-weight: 700;
+    margin-top: 6px;
+}
+
+.plan-price {
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+}
+
+.price-amount {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.price-period {
+    font-size: 0.85rem;
+    color: var(--mat-sys-on-surface-variant);
+}
+
+.plan-desc {
+    font-size: 0.82rem;
+    color: var(--mat-sys-on-surface-variant);
+    margin-top: -4px;
+}
+
+.plan-features {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 8px;
+}
+
+.plan-features li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.83rem;
+}
+
+.feature-check {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    color: #16a34a;
+    flex-shrink: 0;
+}
+
+.plan-cta {
+    width: 100%;
+    margin-top: 4px;
+}
+
+// ── PAYMENT METHODS ─────────────────────────────────────────────
+.card-list {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 4px;
+}
+
+.payment-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px;
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+
+    .dark-theme & {
+        border-color: #334155;
+    }
+}
+
+.card-icon-wrap {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background: #f1f5f9;
+    display: grid;
+    place-items: center;
+    flex-shrink: 0;
+
+    .dark-theme & {
+        background: #1e293b;
+    }
+}
+
+.card-icon-wrap mat-icon {
+    color: #475569;
+}
+
+.card-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.card-title {
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.default-chip {
+    background: #dcfce7 !important;
+    color: #166534 !important;
+    font-size: 0.7rem !important;
+    height: 20px !important;
+    min-height: 20px !important;
+
+    .dark-theme & {
+        background: #14532d !important;
+        color: #bbf7d0 !important;
+    }
+}
+
+.card-sub {
+    font-size: 0.78rem;
+    color: var(--mat-sys-on-surface-variant);
+    margin-top: 2px;
+}
+
+.card-actions {
+    display: flex;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.no-cards {
+    padding: 24px;
+    text-align: center;
+    color: var(--mat-sys-on-surface-variant);
+    font-size: 0.9rem;
+}
+
+.add-card-trigger {
+    padding: 12px 0 0;
+}
+
+.add-card-form {
+    padding: 16px 0 0;
+}
+
+.add-card-form h3 {
+    margin: 0 0 12px;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.card-form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.span-two {
+    grid-column: 1 / -1;
+}
+
+.card-form-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+mat-divider {
+    margin: 12px 0;
+}
+
+// ── INVOICE HISTORY ─────────────────────────────────────────────
+.invoice-list {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-top: 8px;
+
+    .dark-theme & {
+        border-color: #334155;
+    }
+}
+
+.invoice-list-header,
+.invoice-list-row {
+    display: grid;
+    grid-template-columns: 1.6fr 1fr 1fr 1fr 1fr auto;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 16px;
+}
+
+.invoice-list-header {
+    background: #f8fafc;
+    font-weight: 600;
+    font-size: 0.82rem;
+    color: #475569;
+
+    .dark-theme & {
+        background: #1f2937;
+        color: #94a3b8;
+    }
+}
+
+.invoice-list-row {
+    border-top: 1px solid #e2e8f0;
+
+    .dark-theme & {
+        border-top-color: #334155;
+    }
+}
+
+.invoice-list-row:hover {
+    background: #f8fafc;
+
+    .dark-theme & {
+        background: #1f2937;
+    }
+}
+
+.invoice-id {
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.align-right {
+    text-align: right;
+    justify-self: end;
+}
+
+.amount-cell {
+    font-weight: 600;
+}
+
+// ── STATUS CHIPS ────────────────────────────────────────────────
+.status-chip-paid {
+    background: #dcfce7 !important;
+    color: #166534 !important;
+    font-weight: 600;
+    font-size: 0.75rem;
+
+    .dark-theme & {
+        background: #14532d !important;
+        color: #bbf7d0 !important;
+    }
+}
+
+.status-chip-failed {
+    background: #fee2e2 !important;
+    color: #991b1b !important;
+    font-weight: 600;
+    font-size: 0.75rem;
+
+    .dark-theme & {
+        background: #7f1d1d !important;
+        color: #fecaca !important;
+    }
+}
+
+.status-chip-pending {
+    background: #fef3c7 !important;
+    color: #92400e !important;
+    font-weight: 600;
+    font-size: 0.75rem;
+
+    .dark-theme & {
+        background: #78350f !important;
+        color: #fde68a !important;
+    }
+}
+
+// ── RESPONSIVE ──────────────────────────────────────────────────
+@media (max-width: 960px) {
+    .billing-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .billing-sidebar {
+        border-right: none;
+        border-bottom: 1px solid #e2e8f0;
+        padding: 0 0 10px;
+
+        .dark-theme & {
+            border-bottom-color: #334155;
+        }
+    }
+
+    .plans-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 760px) {
+    .page {
+        padding: 14px;
+    }
+
+    .billing-content {
+        padding: 12px;
+    }
+
+    .card-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .span-two {
+        grid-column: auto;
+    }
+
+    .invoice-list-header,
+    .invoice-list-row {
+        grid-template-columns: 1fr 1fr auto;
+    }
+
+    .invoice-list-header span:nth-child(3),
+    .invoice-list-header span:nth-child(4),
+    .invoice-list-row span:nth-child(3),
+    .invoice-list-row span:nth-child(4) {
+        display: none;
+    }
+}

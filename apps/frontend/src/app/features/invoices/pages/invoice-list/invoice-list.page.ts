@@ -8,7 +8,7 @@ import {
     inject,
     signal,
 } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatChipsModule } from '@angular/material/chips';
@@ -21,31 +21,8 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar';
 import { MatTableDataSource, MatTableModule } from '@angular/material/table';
 import { MatTooltipModule } from '@angular/material/tooltip';
-
-interface LocalInvoice {
-    id: string;
-    client: string;
-    email: string;
-    amount: number;
-    status: string;
-    dueDate: string;
-    issuedDate: string;
-}
-
-const MOCK_INVOICES: LocalInvoice[] = [
-    { id: 'INV-001', client: 'Globex Ltd', email: 'billing@globex.com', amount: 12500, status: 'Paid', dueDate: 'Apr 22, 2026', issuedDate: 'Apr 08, 2026' },
-    { id: 'INV-002', client: 'Initech', email: 'accounts@initech.com', amount: 8200, status: 'Overdue', dueDate: 'Apr 10, 2026', issuedDate: 'Mar 27, 2026' },
-    { id: 'INV-003', client: 'Umbrella Corp', email: 'finance@umbrella.com', amount: 15000, status: 'Sent', dueDate: 'Apr 30, 2026', issuedDate: 'Apr 15, 2026' },
-    { id: 'INV-004', client: 'Stark Industries', email: 'ap@stark.com', amount: 6800, status: 'Paid', dueDate: 'Apr 18, 2026', issuedDate: 'Apr 04, 2026' },
-    { id: 'INV-005', client: 'Wayne Enterprises', email: 'billing@wayne.com', amount: 9400, status: 'Draft', dueDate: 'May 05, 2026', issuedDate: 'Apr 21, 2026' },
-    { id: 'INV-006', client: 'Oscorp', email: 'finance@oscorp.com', amount: 22000, status: 'Paid', dueDate: 'Apr 15, 2026', issuedDate: 'Apr 01, 2026' },
-    { id: 'INV-007', client: 'Cyberdyne Systems', email: 'ap@cyberdyne.com', amount: 17500, status: 'Overdue', dueDate: 'Apr 05, 2026', issuedDate: 'Mar 22, 2026' },
-    { id: 'INV-008', client: 'Massive Dynamic', email: 'billing@massive.com', amount: 11200, status: 'Sent', dueDate: 'May 01, 2026', issuedDate: 'Apr 17, 2026' },
-    { id: 'INV-009', client: 'Weyland Corp', email: 'accounts@weyland.com', amount: 34000, status: 'Paid', dueDate: 'Apr 20, 2026', issuedDate: 'Apr 06, 2026' },
-    { id: 'INV-010', client: 'Soylent Corp', email: 'finance@soylent.com', amount: 5600, status: 'Draft', dueDate: 'May 10, 2026', issuedDate: 'Apr 24, 2026' },
-    { id: 'INV-011', client: 'Rekall Inc', email: 'billing@rekall.com', amount: 8900, status: 'Paid', dueDate: 'Apr 12, 2026', issuedDate: 'Mar 29, 2026' },
-    { id: 'INV-012', client: 'Tyrell Corp', email: 'ap@tyrell.com', amount: 41000, status: 'Overdue', dueDate: 'Apr 02, 2026', issuedDate: 'Mar 19, 2026' },
-];
+import { InvoiceService } from '../../services/invoice.service';
+import { Invoice } from '../../models/invoice.models';
 
 @Component({
     selector: 'app-invoice-list-page',
@@ -70,10 +47,10 @@ const MOCK_INVOICES: LocalInvoice[] = [
 })
 export class InvoiceListPage implements AfterViewInit {
     private readonly snackBar = inject(MatSnackBar);
+    private readonly router = inject(Router);
+    private readonly invoiceService = inject(InvoiceService);
 
     @ViewChild(MatPaginator) private paginator!: MatPaginator;
-
-    private readonly invoicesSignal = signal<LocalInvoice[]>([...MOCK_INVOICES]);
 
     protected readonly filterSearch = signal('');
     protected readonly filterStatus = signal('');
@@ -81,32 +58,32 @@ export class InvoiceListPage implements AfterViewInit {
 
     protected readonly filteredInvoices = computed(() => {
         const q = this.filterSearch().toLowerCase().trim();
-        const status = this.filterStatus();
+        const status = this.filterStatus().toLowerCase();
         const sort = this.sortBy();
-        let list = [...this.invoicesSignal()];
+        let list = [...this.invoiceService.invoices()];
 
         if (q) {
             list = list.filter(
-                (i) => i.client.toLowerCase().includes(q) || i.id.toLowerCase().includes(q)
+                (i) => i.clientName.toLowerCase().includes(q) || i.invoiceNumber.toLowerCase().includes(q)
             );
         }
 
-        if (status && status !== 'All') {
+        if (status && status !== 'all') {
             list = list.filter((i) => i.status === status);
         }
 
         switch (sort) {
             case 'date_desc':
-                list.sort((a, b) => new Date(b.issuedDate).getTime() - new Date(a.issuedDate).getTime());
+                list.sort((a, b) => new Date(b.issueDate).getTime() - new Date(a.issueDate).getTime());
                 break;
             case 'date_asc':
-                list.sort((a, b) => new Date(a.issuedDate).getTime() - new Date(b.issuedDate).getTime());
+                list.sort((a, b) => new Date(a.issueDate).getTime() - new Date(b.issueDate).getTime());
                 break;
             case 'amt_desc':
-                list.sort((a, b) => b.amount - a.amount);
+                list.sort((a, b) => this.getInvoiceTotal(b) - this.getInvoiceTotal(a));
                 break;
             case 'amt_asc':
-                list.sort((a, b) => a.amount - b.amount);
+                list.sort((a, b) => this.getInvoiceTotal(a) - this.getInvoiceTotal(b));
                 break;
         }
 
@@ -114,16 +91,16 @@ export class InvoiceListPage implements AfterViewInit {
     });
 
     protected readonly totalAmount = computed(() =>
-        this.filteredInvoices().reduce((sum, i) => sum + i.amount, 0)
+        this.filteredInvoices().reduce((sum, i) => sum + this.getInvoiceTotal(i), 0)
     );
     protected readonly paidCount = computed(() =>
-        this.filteredInvoices().filter((i) => i.status === 'Paid').length
+        this.filteredInvoices().filter((i) => i.status === 'paid').length
     );
     protected readonly overdueCount = computed(() =>
-        this.filteredInvoices().filter((i) => i.status === 'Overdue').length
+        this.filteredInvoices().filter((i) => i.status === 'overdue').length
     );
     protected readonly draftCount = computed(() =>
-        this.filteredInvoices().filter((i) => i.status === 'Draft').length
+        this.filteredInvoices().filter((i) => i.status === 'draft').length
     );
     protected readonly hasActiveFilter = computed(
         () =>
@@ -144,7 +121,7 @@ export class InvoiceListPage implements AfterViewInit {
         { label: 'Amount: Low', value: 'amt_asc' },
     ];
 
-    readonly dataSource = new MatTableDataSource<LocalInvoice>([]);
+    readonly dataSource = new MatTableDataSource<Invoice>([]);
 
     constructor() {
         effect(() => {
@@ -159,8 +136,12 @@ export class InvoiceListPage implements AfterViewInit {
         this.dataSource.paginator = this.paginator;
     }
 
+    protected getInvoiceTotal(invoice: Invoice): number {
+        return this.invoiceService.getInvoiceSummary(invoice).grandTotal;
+    }
+
     protected formatCurrency(amount: number): string {
-        return `₹${amount.toLocaleString('en-IN')}`;
+        return this.invoiceService.formatMoney(amount);
     }
 
     protected statusClass(status: string): string {
@@ -168,7 +149,7 @@ export class InvoiceListPage implements AfterViewInit {
     }
 
     protected clientInitial(name: string): string {
-        return name.charAt(0).toUpperCase();
+        return name ? name.charAt(0).toUpperCase() : '?';
     }
 
     protected clearFilters(): void {
@@ -178,17 +159,11 @@ export class InvoiceListPage implements AfterViewInit {
     }
 
     protected newInvoice(): void {
-        this.snackBar.open('Coming soon!', 'Close', {
-            duration: 2200,
-            horizontalPosition: 'end',
-            verticalPosition: 'top',
-        });
+        this.router.navigate(['/invoices/create']);
     }
 
-    protected markAsPaid(invoice: LocalInvoice): void {
-        this.invoicesSignal.update((list) =>
-            list.map((i) => (i.id === invoice.id ? { ...i, status: 'Paid' } : i))
-        );
+    protected markAsPaid(invoice: Invoice): void {
+        this.invoiceService.markAsPaid(invoice.id);
         this.snackBar.open('Marked as paid', 'Close', {
             duration: 2200,
             horizontalPosition: 'end',
@@ -197,15 +172,11 @@ export class InvoiceListPage implements AfterViewInit {
     }
 
     protected downloadPdf(): void {
-        this.snackBar.open('Downloading...', 'Close', {
-            duration: 2200,
-            horizontalPosition: 'end',
-            verticalPosition: 'top',
-        });
+        this.invoiceService.triggerPdfToast();
     }
 
-    protected deleteInvoice(invoice: LocalInvoice): void {
-        this.invoicesSignal.update((list) => list.filter((i) => i.id !== invoice.id));
+    protected deleteInvoice(invoice: Invoice): void {
+        this.invoiceService.deleteInvoice(invoice.id);
         this.snackBar.open('Deleted', 'Close', {
             duration: 2200,
             horizontalPosition: 'end',

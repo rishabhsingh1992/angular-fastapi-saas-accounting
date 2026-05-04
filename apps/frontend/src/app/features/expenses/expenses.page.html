@@ -1,4 +1,195 @@
 <section class="page">
-    <h1>Expenses</h1>
-    <p>Monitor spend categories and reimbursement workflows.</p>
+
+    <!-- ── PAGE HEADER ──────────────────────────────────────────── -->
+    <header class="page-header">
+        <div>
+            <h1>Expenses</h1>
+            <p>{{ filteredExpenses().length }} expenses</p>
+        </div>
+        <button mat-flat-button color="primary" type="button" (click)="openAddDialog()">
+            <mat-icon>add</mat-icon>
+            Add Expense
+        </button>
+    </header>
+
+    <!-- ── FILTERS BAR ──────────────────────────────────────────── -->
+    <mat-card class="filters-card">
+        <mat-card-content>
+            <div class="filters-row">
+                <mat-form-field appearance="outline" class="filter-field search-field">
+                    <mat-icon matPrefix>search</mat-icon>
+                    <mat-label>Search</mat-label>
+                    <input matInput placeholder="Search expenses..." [value]="filterSearch()"
+                        (input)="filterSearch.set($any($event.target).value)" />
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="filter-field">
+                    <mat-label>Category</mat-label>
+                    <mat-select [value]="filterCategory()" (valueChange)="filterCategory.set($event)">
+                        @for (opt of categoryOptions; track opt) {
+                            <mat-option [value]="opt">{{ opt }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="filter-field">
+                    <mat-label>Status</mat-label>
+                    <mat-select [value]="filterStatus()" (valueChange)="filterStatus.set($event)">
+                        @for (opt of statusOptions; track opt) {
+                            <mat-option [value]="opt">{{ opt }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="filter-field sort-field">
+                    <mat-label>Sort by</mat-label>
+                    <mat-select [value]="sortBy()" (valueChange)="sortBy.set($event)">
+                        @for (opt of sortOptions; track opt.value) {
+                            <mat-option [value]="opt.value">{{ opt.label }}</mat-option>
+                        }
+                    </mat-select>
+                </mat-form-field>
+
+                @if (hasActiveFilter()) {
+                    <button mat-stroked-button type="button" (click)="clearFilters()" class="clear-btn">
+                        Clear
+                    </button>
+                }
+            </div>
+        </mat-card-content>
+    </mat-card>
+
+    <!-- ── SUMMARY STRIP ────────────────────────────────────────── -->
+    <div class="summary-strip" aria-label="Expense summary">
+        <span class="stat-chip">Total: <strong>{{ formatCurrency(totalSpend()) }}</strong></span>
+        <span class="stat-chip pending-chip">
+            Pending: <strong>{{ pendingCount() }}</strong>
+            @if (pendingAmount() > 0) { <span class="chip-sub">({{ formatCurrency(pendingAmount()) }})</span> }
+        </span>
+        <span class="stat-chip approved-chip">Approved: <strong>{{ approvedCount() }}</strong></span>
+        <span class="stat-chip reimbursed-chip">Reimbursed: <strong>{{ reimbursedCount() }}</strong></span>
+    </div>
+
+    <!-- ── EXPENSE TABLE ─────────────────────────────────────────── -->
+    @if (filteredExpenses().length > 0) {
+        <mat-card class="expense-list-card">
+            <mat-card-content>
+                <div class="table-scroll">
+                    <table mat-table [dataSource]="dataSource" class="expense-table">
+
+                        <!-- Description -->
+                        <ng-container matColumnDef="description">
+                            <th mat-header-cell *matHeaderCellDef>Description</th>
+                            <td mat-cell *matCellDef="let row">
+                                <div class="desc-cell">
+                                    <span class="desc-text">{{ row.description }}</span>
+                                    @if (row.notes) {
+                                        <small class="desc-notes">{{ row.notes }}</small>
+                                    }
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <!-- Category -->
+                        <ng-container matColumnDef="category">
+                            <th mat-header-cell *matHeaderCellDef>Category</th>
+                            <td mat-cell *matCellDef="let row">
+                                <div class="category-cell">
+                                    <mat-icon class="category-icon" aria-hidden="true">{{ categoryIcon(row.category) }}</mat-icon>
+                                    <span>{{ row.category }}</span>
+                                </div>
+                            </td>
+                        </ng-container>
+
+                        <!-- Amount -->
+                        <ng-container matColumnDef="amount">
+                            <th mat-header-cell *matHeaderCellDef class="amount-header">Amount</th>
+                            <td mat-cell *matCellDef="let row" class="amount-cell">
+                                {{ formatCurrency(row.amount) }}
+                            </td>
+                        </ng-container>
+
+                        <!-- Date -->
+                        <ng-container matColumnDef="date">
+                            <th mat-header-cell *matHeaderCellDef>Date</th>
+                            <td mat-cell *matCellDef="let row">{{ formatDate(row.date) }}</td>
+                        </ng-container>
+
+                        <!-- Status -->
+                        <ng-container matColumnDef="status">
+                            <th mat-header-cell *matHeaderCellDef>Status</th>
+                            <td mat-cell *matCellDef="let row">
+                                <mat-chip [class]="statusClass(row.status)">{{ row.status }}</mat-chip>
+                            </td>
+                        </ng-container>
+
+                        <!-- Actions -->
+                        <ng-container matColumnDef="actions">
+                            <th mat-header-cell *matHeaderCellDef></th>
+                            <td mat-cell *matCellDef="let row" class="actions-cell">
+                                <button mat-icon-button type="button"
+                                    [matMenuTriggerFor]="rowMenu"
+                                    [matMenuTriggerData]="{ expense: row }"
+                                    aria-label="More actions">
+                                    <mat-icon>more_vert</mat-icon>
+                                </button>
+                            </td>
+                        </ng-container>
+
+                        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayedColumns" class="expense-row"></tr>
+                    </table>
+                </div>
+
+                <mat-paginator [pageSize]="8" [pageSizeOptions]="[8, 16, 24]" showFirstLastButtons></mat-paginator>
+            </mat-card-content>
+        </mat-card>
+    }
+
+    <!-- ── EMPTY STATE ───────────────────────────────────────────── -->
+    @if (filteredExpenses().length === 0) {
+        <div class="empty-state" role="status">
+            @if (hasActiveFilter()) {
+                <mat-icon aria-hidden="true">search_off</mat-icon>
+                <h2>No expenses found</h2>
+                <p>Try adjusting your search or filters</p>
+                <button mat-stroked-button type="button" (click)="clearFilters()">Clear Filters</button>
+            } @else {
+                <mat-icon aria-hidden="true">receipt_long</mat-icon>
+                <h2>No expenses yet</h2>
+                <p>Add your first expense to start tracking spend</p>
+                <button mat-flat-button color="primary" type="button" (click)="openAddDialog()">
+                    <mat-icon>add</mat-icon>
+                    Add Expense
+                </button>
+            }
+        </div>
+    }
+
 </section>
+
+<!-- Shared row-action menu -->
+<mat-menu #rowMenu>
+    <ng-template matMenuContent let-expense="expense">
+        @if (expense.status === 'Pending') {
+            <button mat-menu-item type="button" (click)="approve(expense)">
+                <mat-icon>check_circle</mat-icon>
+                Approve
+            </button>
+            <button mat-menu-item type="button" (click)="reject(expense)">
+                <mat-icon>cancel</mat-icon>
+                Reject
+            </button>
+        }
+        @if (expense.status === 'Approved') {
+            <button mat-menu-item type="button" (click)="markReimbursed(expense)">
+                <mat-icon>payments</mat-icon>
+                Mark Reimbursed
+            </button>
+        }
+        <button mat-menu-item type="button" class="delete-item" (click)="deleteExpense(expense)">
+            <mat-icon>delete</mat-icon>
+            Delete
+        </button>
+    </ng-template>
+</mat-menu>
